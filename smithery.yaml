@@ -1,8 +1,14 @@
 # Smithery MCP Server Configuration
 # https://smithery.ai/docs
+name: "mcp-sentinel"
+description: "Autonomous synthetic health checks, JSON-RPC 2.0 handshake validation, breaking schema drift detection, and credential leak scanning for remote Model Context Protocol (MCP) servers."
+homepage: "https://mcp-sentinel.pasihakamaki.workers.dev"
+icon: "https://mcp-sentinel.pasihakamaki.workers.dev/icon.svg"
+
 startCommand:
   type: "http"
   url: "https://mcp-sentinel.pasihakamaki.workers.dev/mcp"
 configSchema:
   type: "object"
   properties: {}
+

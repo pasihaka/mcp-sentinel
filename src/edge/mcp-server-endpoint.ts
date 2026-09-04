@@ -20,7 +20,12 @@ export interface JsonRpcResponse {
 
 const MCP_SERVER_INFO = {
   name: 'mcp-sentinel',
+  title: 'MCP Sentinel',
   version: '1.0.0',
+  description:
+    'Autonomous protocol health, schema drift, and security monitor for remote Model Context Protocol (MCP) servers.',
+  homepage: 'https://mcp-sentinel.pasihakamaki.workers.dev',
+  icon: 'https://mcp-sentinel.pasihakamaki.workers.dev/icon.svg',
 };
 
 const MCP_CAPABILITIES = {
@@ -48,6 +53,29 @@ const MCP_TOOLS = [
       },
       required: ['endpointUrl'],
     },
+    outputSchema: {
+      type: 'object',
+      properties: {
+        content: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              type: { type: 'string', description: 'Content MIME type' },
+              text: { type: 'string', description: 'Diagnostic audit report' },
+            },
+            required: ['type', 'text'],
+          },
+        },
+        isError: { type: 'boolean', description: 'Whether the audit detected downtime or failure' },
+      },
+      required: ['content'],
+    },
+    annotations: {
+      readOnlyHint: true,
+      idempotencyHint: true,
+      openWorldHint: true,
+    },
   },
   {
     name: 'get_monitor_badge',
@@ -62,6 +90,29 @@ const MCP_TOOLS = [
         },
       },
       required: ['monitorId'],
+    },
+    outputSchema: {
+      type: 'object',
+      properties: {
+        content: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              type: { type: 'string', description: 'Content MIME type' },
+              text: { type: 'string', description: 'Badge URLs and markdown snippets' },
+            },
+            required: ['type', 'text'],
+          },
+        },
+        isError: { type: 'boolean', description: 'Whether an error occurred' },
+      },
+      required: ['content'],
+    },
+    annotations: {
+      readOnlyHint: true,
+      idempotencyHint: true,
+      openWorldHint: false,
     },
   },
 ];

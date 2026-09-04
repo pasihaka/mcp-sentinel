@@ -89,6 +89,29 @@ export default {
         });
       }
 
+      // Public Icon Endpoint for Registries (Smithery, Glama, etc.)
+      if (url.pathname === '/icon.svg' && request.method === 'GET') {
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#g)"/>
+  <path d="M64 24 L94 38 V66 C94 86 64 104 64 104 C64 104 34 86 34 66 V38 Z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M48 64 L58 64 L64 50 L70 76 L76 64 L82 64" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+        return new Response(svg, {
+          status: 200,
+          headers: {
+            ...CORS_HEADERS,
+            'Content-Type': 'image/svg+xml; charset=utf-8',
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400',
+          },
+        });
+      }
+
       // 3. Hosted Remote MCP Server Protocol Endpoint (Streamable HTTP & SSE)
       if (url.pathname === '/mcp' || url.pathname === '/sse') {
         return handleMcpHttpRequest(request, url.origin, CORS_HEADERS);
