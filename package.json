@@ -1,0 +1,27 @@
+{
+  "name": "mcp-sentinel",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Autonomous Protocol Health, Schema-Drift & Security Sentinel for Remote Model Context Protocol Servers",
+  "main": "dist/worker.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "dev": "wrangler dev"
+  },
+  "keywords": ["mcp", "model-context-protocol", "monitoring", "uptime", "schema-drift", "json-rpc"],
+  "author": "MCP Sentinel Team",
+  "license": "MIT",
+  "dependencies": {
+    "ajv": "^8.17.1"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250224.0",
+    "@types/node": "^22.13.5",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.6",
+    "wrangler": "^3.109.2"
+  }
+}

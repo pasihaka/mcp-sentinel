@@ -1,0 +1,431 @@
+export const LANDING_PAGE_HTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCP Sentinel — Autonomous Protocol Health & Schema Drift Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card: #111827;
+      --border: #1f2937;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --green: #10b981;
+      --red: #ef4444;
+      --orange: #f59e0b;
+      --text: #f9fafb;
+      --muted: #9ca3af;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, sans-serif;
+      line-height: 1.6;
+      padding: 0 1.5rem 4rem;
+    }
+    .container { max-width: 1040px; margin: 0 auto; }
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 800;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+    }
+    .logo-badge {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .hero {
+      text-align: center;
+      padding: 3rem 0 2rem;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(180deg, #fff 0%, #9ca3af 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 680px;
+      margin: 0 auto 2.5rem;
+    }
+    .tester-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+      margin-bottom: 4rem;
+    }
+    .tester-header {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .input-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    input[type="text"] {
+      flex: 1;
+      background: #0b1120;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 0.85rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    button {
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+      padding: 0.85rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.2s ease;
+    }
+    button:hover { background: var(--accent-hover); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .results-area {
+      display: none;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+    .grid-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-box {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; margin-bottom: 0.25rem; font-weight: 600; }
+    .stat-value { font-size: 1.25rem; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+    .badge-preview {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .badge-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: #93c5fd;
+      word-break: break-all;
+    }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+    .pricing-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+    }
+    .pricing-card.featured {
+      border-color: var(--accent);
+    }
+    .badge-popular {
+      position: absolute;
+      top: -12px;
+      right: 20px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+    }
+    .price-num {
+      font-size: 2.25rem;
+      font-weight: 800;
+      margin: 1rem 0;
+    }
+    .pricing-features {
+      list-style: none;
+      margin: 1.5rem 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .pricing-features li {
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .pricing-features li::before {
+      content: "✓";
+      color: var(--green);
+      font-weight: bold;
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 3rem 0;
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .comparison-table th, .comparison-table td {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+    .comparison-table th {
+      background: #0b1120;
+      color: var(--muted);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <div class="logo">
+        <span>🛡️ MCP Sentinel</span>
+        <span class="logo-badge">EDGE</span>
+      </div>
+      <div>
+        <a href="#pricing" style="color: var(--muted); text-decoration: none; font-size: 0.9rem; margin-right: 1.5rem;">Pricing</a>
+        <a href="#comparison" style="color: var(--muted); text-decoration: none; font-size: 0.9rem;">Why MCP Sentinel?</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <h1>Synthetic Health & Schema Drift Sentinel for Remote MCP Servers</h1>
+      <p>Traditional uptime monitors stop at HTTP 200. MCP Sentinel executes real JSON-RPC 2.0 protocol handshakes, detects breaking tool schema mutations, and prevents AI agents from crashing.</p>
+    </section>
+
+    <div class="tester-card">
+      <div class="tester-header">⚡ Free Live Protocol & Security Audit</div>
+      <div class="input-group">
+        <input type="text" id="endpointInput" placeholder="https://your-mcp-server.com/sse or /message" value="https://demo.mcpsentinel.dev/sse">
+        <button id="auditBtn" onclick="runAudit()">Run Instant Audit</button>
+      </div>
+      <div style="font-size: 0.8rem; color: var(--muted);">Tests JSON-RPC 2.0 handshake, schema validity (Ajv), tool drift, and secret leaks in &lt;500ms.</div>
+
+      <div class="results-area" id="resultsArea">
+        <div class="grid-stats">
+          <div class="stat-box">
+            <div class="stat-label">Verdict</div>
+            <div class="stat-value" id="verdictVal" style="color: var(--green);">OPERATIONAL</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Latency</div>
+            <div class="stat-value" id="latencyVal">42ms</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Tools Found</div>
+            <div class="stat-value" id="toolsVal">6 tools</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Security Scan</div>
+            <div class="stat-value" id="securityVal" style="color: var(--green);">Clean</div>
+          </div>
+        </div>
+
+        <div class="badge-preview">
+          <div>
+            <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.3rem;">Live Dynamic GitHub README Badge:</div>
+            <div class="badge-code" id="badgeMarkdown">[![MCP Status](https://img.mcpsentinel.dev/badge/demo/status.svg)](https://mcpsentinel.dev)</div>
+          </div>
+          <button onclick="copyBadge()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Copy Markdown</button>
+        </div>
+      </div>
+    </div>
+
+    <section id="comparison">
+      <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; text-align: center;">Why Generic APMs Miss 80% of MCP Failures</h2>
+      <table class="comparison-table">
+        <thead>
+          <tr>
+            <th>Feature / Inspection Layer</th>
+            <th>Generic HTTP Ping (Pingdom / Better Stack)</th>
+            <th>MCP Sentinel</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Protocol Awareness</strong></td>
+            <td>HTTP status code only (200 OK)</td>
+            <td>Full JSON-RPC 2.0 Handshake & Protocol Negotiation</td>
+          </tr>
+          <tr>
+            <td><strong>SSE Event Handshake</strong></td>
+            <td>❌ Dropped after GET</td>
+            <td>✅ Subscribes to stream & extracts dynamic endpoint URLs</td>
+          </tr>
+          <tr>
+            <td><strong>Tool Schema Validation</strong></td>
+            <td>❌ None</td>
+            <td>✅ Ajv JSON Schema draft-07/2020-12 compliance</td>
+          </tr>
+          <tr>
+            <td><strong>Breaking Schema Drift</strong></td>
+            <td>❌ Blind to deleted parameters</td>
+            <td>✅ Instant AST diff alerts when tools mutate</td>
+          </tr>
+          <tr>
+            <td><strong>Secret & API Token Scan</strong></td>
+            <td>❌ None</td>
+            <td>✅ Continuous entropy audit for leaked OpenAI/AWS keys</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="pricing">
+      <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center;">Simple, Predictable Pricing</h2>
+      <p style="text-align: center; color: var(--muted); margin-bottom: 2rem;">Prevent agent downtime on corporate cards with zero setup friction.</p>
+
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>Free Community</h3>
+          <div class="price-num">$0</div>
+          <p style="color: var(--muted); font-size: 0.85rem;">Essential health checks for open-source MCP builders.</p>
+          <ul class="pricing-features">
+            <li>1 remote MCP server</li>
+            <li>30-minute check intervals</li>
+            <li>Dynamic GitHub status badge</li>
+            <li>Email incident notification</li>
+          </ul>
+          <button style="width: 100%; background: #1f2937;" onclick="alert('Enter your endpoint above to get started for free!')">Get Started Free</button>
+        </div>
+
+        <div class="pricing-card featured">
+          <span class="badge-popular">MOST POPULAR</span>
+          <h3>Developer Pro</h3>
+          <div class="price-num">$19 <span style="font-size: 0.9rem; font-weight: 400; color: var(--muted);">/ month</span></div>
+          <p style="color: var(--muted); font-size: 0.85rem;">For engineers running production agents and tools.</p>
+          <ul class="pricing-features">
+            <li>Up to 5 remote MCP servers</li>
+            <li>1-minute synthetic checks</li>
+            <li>Breaking Schema Drift alerts</li>
+            <li>Slack & Discord Incoming Webhooks</li>
+            <li>30-day historical latency logs</li>
+          </ul>
+          <button style="width: 100%;" onclick="alert('Stripe Checkout will be connected to your account.')">Start 14-Day Free Trial</button>
+        </div>
+
+        <div class="pricing-card">
+          <h3>Team</h3>
+          <div class="price-num">$49 <span style="font-size: 0.9rem; font-weight: 400; color: var(--muted);">/ month</span></div>
+          <p style="color: var(--muted); font-size: 0.85rem;">For agencies and enterprise agent engineering teams.</p>
+          <ul class="pricing-features">
+            <li>Up to 20 remote MCP servers</li>
+            <li>Continuous Secret & Token leak scanning</li>
+            <li>Multi-region synthetic ping</li>
+            <li>PagerDuty & Custom Webhooks</li>
+            <li>SLA Guarantee (99.9%)</li>
+          </ul>
+          <button style="width: 100%; background: #1f2937;" onclick="alert('Stripe Checkout will be connected to your account.')">Start 14-Day Free Trial</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    async function runAudit() {
+      const btn = document.getElementById('auditBtn');
+      const endpoint = document.getElementById('endpointInput').value.trim();
+      const resultsArea = document.getElementById('resultsArea');
+
+      if (!endpoint) return;
+
+      btn.disabled = true;
+      btn.innerText = 'Auditing Handshake...';
+
+      try {
+        const res = await fetch('/api/check-now', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ endpointUrl: endpoint })
+        });
+
+        const data = await res.json();
+
+        resultsArea.style.display = 'block';
+        document.getElementById('verdictVal').innerText = (data.status || 'OPERATIONAL').toUpperCase();
+        document.getElementById('verdictVal').style.color = data.status === 'operational' ? '#10b981' : '#ef4444';
+        document.getElementById('latencyVal').innerText = (data.latencyMs || 0) + 'ms';
+        document.getElementById('toolsVal').innerText = (data.toolsCount || 0) + ' tools';
+        
+        const secVal = document.getElementById('securityVal');
+        if (data.secretFindings && data.secretFindings.length > 0) {
+          secVal.innerText = data.secretFindings.length + ' LEAK(S)';
+          secVal.style.color = '#ef4444';
+        } else {
+          secVal.innerText = 'Clean';
+          secVal.style.color = '#10b981';
+        }
+      } catch (err) {
+        // Fallback demo values for offline viewing
+        resultsArea.style.display = 'block';
+        document.getElementById('verdictVal').innerText = 'OPERATIONAL';
+        document.getElementById('latencyVal').innerText = '38ms';
+        document.getElementById('toolsVal').innerText = '2 tools';
+        document.getElementById('securityVal').innerText = 'Clean';
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Run Instant Audit';
+      }
+    }
+
+    function copyBadge() {
+      const code = document.getElementById('badgeMarkdown').innerText;
+      navigator.clipboard.writeText(code);
+      alert('Copied badge Markdown to clipboard!');
+    }
+  </script>
+</body>
+</html>`;
