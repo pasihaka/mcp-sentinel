@@ -46,7 +46,7 @@ async function main() {
   }
 
   console.log('\n📌 GitHub README Badge Embed:');
-  console.log(`[![MCP Status](https://img.mcpsentinel.dev/badge/demo/status.svg)](https://mcpsentinel.dev)`);
+  console.log(`[![MCP Sentinel Status](https://mcp-sentinel.pasihakamaki.workers.dev/badge/demo/status.svg)](https://mcp-sentinel.pasihakamaki.workers.dev)`);
   console.log('='.repeat(60) + '\n');
 }
 

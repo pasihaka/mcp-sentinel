@@ -116,6 +116,24 @@ export async function handleJsonRpcMessage(
         },
       };
 
+    case 'resources/list':
+      return {
+        jsonrpc: '2.0',
+        id,
+        result: {
+          resources: [],
+        },
+      };
+
+    case 'prompts/list':
+      return {
+        jsonrpc: '2.0',
+        id,
+        result: {
+          prompts: [],
+        },
+      };
+
     case 'tools/call': {
       const toolName = req.params?.name;
       const args = req.params?.arguments || {};
