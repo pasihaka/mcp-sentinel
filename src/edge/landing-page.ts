@@ -339,7 +339,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <li>Dynamic GitHub status badge</li>
             <li>Email incident notification</li>
           </ul>
-          <button style="width: 100%; background: #1f2937;" onclick="alert('Enter your endpoint above to get started for free!')">Get Started Free</button>
+          <button style="width: 100%; background: #1f2937;" onclick="document.getElementById('endpointInput').scrollIntoView({ behavior: 'smooth' }); document.getElementById('endpointInput').focus();">Start Free Monitoring</button>
         </div>
 
         <div class="pricing-card featured">
@@ -354,7 +354,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <li>Slack & Discord Incoming Webhooks</li>
             <li>30-day historical latency logs</li>
           </ul>
-          <button style="width: 100%;" onclick="alert('Stripe Checkout will be connected to your account.')">Start 14-Day Free Trial</button>
+          <button style="width: 100%;" onclick="window.location.href='https://buy.stripe.com/aFa00j8tE3mE7OH3Ss5EY00'">Upgrade to Pro ($19/mo)</button>
         </div>
 
         <div class="pricing-card">
@@ -368,7 +368,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <li>PagerDuty & Custom Webhooks</li>
             <li>SLA Guarantee (99.9%)</li>
           </ul>
-          <button style="width: 100%; background: #1f2937;" onclick="alert('Stripe Checkout will be connected to your account.')">Start 14-Day Free Trial</button>
+          <button style="width: 100%; background: #1f2937;" onclick="window.location.href='https://buy.stripe.com/cNi9ATdNY3mE9WP1Kk5EY01'">Upgrade to Team ($49/mo)</button>
         </div>
       </div>
     </section>
