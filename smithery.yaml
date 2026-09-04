@@ -1,0 +1,8 @@
+# Smithery MCP Server Configuration
+# https://smithery.ai/docs
+startCommand:
+  type: "http"
+  url: "https://mcp-sentinel.pasihakamaki.workers.dev/mcp"
+configSchema:
+  type: "object"
+  properties: {}
