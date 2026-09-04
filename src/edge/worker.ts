@@ -14,6 +14,7 @@ import {
   handleStripeWebhookEvent,
   createBillingPortalSession,
 } from '../billing/stripe.js';
+import { handleMcpHttpRequest } from './mcp-server-endpoint.js';
 import type { CheckStatus, MCPTool } from '../core/types.js';
 
 export interface Env {
@@ -88,7 +89,12 @@ export default {
         });
       }
 
-      // 3. Instant On-Demand Audit Endpoint (Public / Free Tester)
+      // 3. Hosted Remote MCP Server Protocol Endpoint (Streamable HTTP & SSE)
+      if (url.pathname === '/mcp' || url.pathname === '/sse') {
+        return handleMcpHttpRequest(request, url.origin, CORS_HEADERS);
+      }
+
+      // 4. Instant On-Demand Audit Endpoint (Public / Free Tester)
       if (url.pathname === '/api/check-now' && request.method === 'POST') {
         const body: any = await request.json();
         if (!body.endpointUrl || typeof body.endpointUrl !== 'string') {

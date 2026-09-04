@@ -21,7 +21,41 @@ Traditional uptime monitors stop at `HTTP 200 OK`. **MCP Sentinel** connects ove
 
 ---
 
-## 💳 Pricing Plans
+## 🔌 Connect as a Remote MCP Server
+
+MCP Sentinel is itself an official **hosted Remote MCP Server** (`mcp/2024-11-05` standard). You can connect your favorite AI assistant (Cursor, Claude Desktop, Windsurf, MindPal) directly to MCP Sentinel to audit any remote MCP server on-demand:
+
+- **Endpoint URL (Streamable HTTP):** `https://mcp-sentinel.pasihakamaki.workers.dev/mcp`
+- **SSE Transport URL:** `https://mcp-sentinel.pasihakamaki.workers.dev/sse`
+
+### Cursor (`mcp.json`)
+```json
+{
+  "mcpServers": {
+    "mcp-sentinel": {
+      "url": "https://mcp-sentinel.pasihakamaki.workers.dev/mcp"
+    }
+  }
+}
+```
+
+### Claude Desktop (`claude_desktop_config.json`)
+```json
+{
+  "mcpServers": {
+    "mcp-sentinel": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp-sentinel.pasihakamaki.workers.dev/mcp"]
+    }
+  }
+}
+```
+
+### Available MCP Tools:
+* `audit_mcp_server(endpointUrl, authHeader?)`: Runs an instant synthetic audit on any remote MCP server, validating handshake, JSON-RPC 2.0 response format, schema validity, and secret exposure.
+* `get_monitor_badge(monitorId)`: Returns public dynamic SVG status badge links and markdown embed snippets.
+
+---
 
 MCP Sentinel is a cloud-hosted B2B developer SaaS utility.
 
