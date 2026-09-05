@@ -236,8 +236,10 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         <span class="logo-badge">EDGE</span>
       </div>
       <div>
-        <a href="#pricing" style="color: var(--muted); text-decoration: none; font-size: 0.9rem; margin-right: 1.5rem;">Pricing</a>
-        <a href="#comparison" style="color: var(--muted); text-decoration: none; font-size: 0.9rem;">Why MCP Sentinel?</a>
+        <a href="https://smithery.ai/server/@pasihakamaki/mcp-sentinel" target="_blank" rel="noopener" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Smithery 100/100 ↗</a>
+        <a href="https://glama.ai/mcp/servers/pasihaka/mcp-sentinel" target="_blank" rel="noopener" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Glama Verified ↗</a>
+        <a href="#pricing" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Pricing</a>
+        <a href="#comparison" style="color: var(--muted); text-decoration: none; font-size: 0.85rem;">Why MCP Sentinel?</a>
       </div>
     </nav>
 
