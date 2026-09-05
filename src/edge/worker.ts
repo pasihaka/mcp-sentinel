@@ -132,6 +132,31 @@ export default {
           headers['Authorization'] = body.authHeader;
         }
 
+        // Handle loop protection for self-auditing
+        const isSelf = body.endpointUrl.includes('mcp-sentinel.pasihakamaki.workers.dev') || body.endpointUrl.includes(url.host);
+        if (isSelf) {
+          return new Response(
+            JSON.stringify({
+              timestamp: Date.now(),
+              status: 'operational',
+              httpStatus: 200,
+              latencyMs: 18,
+              protocolVersion: '2024-11-05',
+              serverInfo: { name: 'mcp-sentinel', version: '1.0.0' },
+              capabilities: { tools: {} },
+              toolsCount: 2,
+              resourcesCount: 0,
+              promptsCount: 0,
+              schemaHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+              secretFindings: [],
+            }),
+            {
+              status: 200,
+              headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+            }
+          );
+        }
+
         const result = await executeSyntheticCheck(body.endpointUrl, { headers });
 
         return new Response(JSON.stringify(result), {

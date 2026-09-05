@@ -277,7 +277,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         <div class="badge-preview">
           <div>
             <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.3rem;">Live Dynamic GitHub README Badge:</div>
-            <div class="badge-code" id="badgeMarkdown">[![MCP Status](https://img.mcpsentinel.dev/badge/demo/status.svg)](https://mcpsentinel.dev)</div>
+            <div class="badge-code" id="badgeMarkdown">[![MCP Sentinel Status](https://mcp-sentinel.pasihakamaki.workers.dev/badge/demo/status.svg)](https://mcp-sentinel.pasihakamaki.workers.dev)</div>
           </div>
           <button onclick="copyBadge()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Copy Markdown</button>
         </div>
