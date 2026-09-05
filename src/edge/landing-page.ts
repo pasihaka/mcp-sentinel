@@ -249,7 +249,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
     <div class="tester-card">
       <div class="tester-header">⚡ Free Live Protocol & Security Audit</div>
       <div class="input-group">
-        <input type="text" id="endpointInput" placeholder="https://your-mcp-server.com/sse or /message" value="https://demo.mcpsentinel.dev/sse">
+        <input type="text" id="endpointInput" placeholder="https://your-mcp-server.com/sse or /mcp" value="https://mcp-sentinel.pasihakamaki.workers.dev/mcp">
         <button id="auditBtn" onclick="runAudit()">Run Instant Audit</button>
       </div>
       <div style="font-size: 0.8rem; color: var(--muted);">Tests JSON-RPC 2.0 handshake, schema validity (Ajv), tool drift, and secret leaks in &lt;500ms.</div>
