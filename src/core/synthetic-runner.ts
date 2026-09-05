@@ -47,6 +47,11 @@ export async function executeSyntheticCheck(
       status = 'degraded';
     }
 
+    // Calculate schema payload weight and estimated LLM prompt context tokens
+    const schemaJson = JSON.stringify(discovery.tools || []);
+    const schemaSizeBytes = new TextEncoder().encode(schemaJson).length;
+    const approxContextTokens = Math.round(schemaSizeBytes / 4);
+
     return {
       timestamp,
       status,
@@ -59,6 +64,8 @@ export async function executeSyntheticCheck(
       resourcesCount: discovery.resources.length,
       promptsCount: discovery.prompts.length,
       schemaHash: diffResult.canonicalHash,
+      schemaSizeBytes,
+      approxContextTokens,
       diffResult,
       secretFindings,
     };

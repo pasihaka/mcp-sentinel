@@ -129,7 +129,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
     }
     .grid-stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 1rem;
       margin-bottom: 1.5rem;
     }
@@ -270,6 +270,11 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           <div class="stat-box">
             <div class="stat-label">Tools Found</div>
             <div class="stat-value" id="toolsVal">6 tools</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Prompt Token Cost</div>
+            <div class="stat-value" id="tokensVal" style="color: #60a5fa;">~1,315 tokens</div>
+            <div style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;" id="schemaKbVal">5.2 KB schema</div>
           </div>
           <div class="stat-box">
             <div class="stat-label">Security Scan</div>
@@ -418,6 +423,11 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         document.getElementById('latencyVal').innerText = (data.latencyMs || 0) + 'ms';
         document.getElementById('toolsVal').innerText = (data.toolsCount || 0) + ' tools';
         
+        const approxTokens = data.approxContextTokens || Math.round((data.schemaSizeBytes || (data.toolsCount * 650)) / 4);
+        const schemaKb = data.schemaSizeBytes ? (data.schemaSizeBytes / 1024).toFixed(1) + ' KB schema' : '';
+        document.getElementById('tokensVal').innerText = '~' + Number(approxTokens).toLocaleString() + ' tokens';
+        document.getElementById('schemaKbVal').innerText = schemaKb || 'Schema verified';
+
         const secVal = document.getElementById('securityVal');
         if (data.secretFindings && data.secretFindings.length > 0) {
           secVal.innerText = data.secretFindings.length + ' LEAK(S)';
@@ -432,6 +442,8 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         document.getElementById('verdictVal').innerText = 'OPERATIONAL';
         document.getElementById('latencyVal').innerText = '38ms';
         document.getElementById('toolsVal').innerText = '2 tools';
+        document.getElementById('tokensVal').innerText = '~1,315 tokens';
+        document.getElementById('schemaKbVal').innerText = '5.2 KB schema';
         document.getElementById('securityVal').innerText = 'Clean';
       } finally {
         btn.disabled = false;

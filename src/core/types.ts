@@ -173,6 +173,8 @@ export interface CheckExecutionResult {
   resourcesCount: number;
   promptsCount: number;
   schemaHash: string;
+  schemaSizeBytes?: number;
+  approxContextTokens?: number;
   diffResult?: SchemaDiffResult;
   secretFindings: SecretLeakFinding[];
   errorMessage?: string;
