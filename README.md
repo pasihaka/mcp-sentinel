@@ -3,16 +3,18 @@
 **Autonomous Protocol Health, Schema-Drift & Security Sentinel for Remote Model Context Protocol (MCP) Servers.**
 
 [![MCP Status](https://img.shields.io/badge/mcp-operational-4c1)](https://github.com/pasihaka/mcp-sentinel)
+[![Smithery](https://smithery.ai/badge/@pasihakamaki/mcp-sentinel)](https://smithery.ai/server/@pasihakamaki/mcp-sentinel)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 
-Traditional uptime monitors stop at `HTTP 200 OK`. **MCP Sentinel** is a **Dual-Era** sentinel that connects over Streamable HTTP and SSE, conducts real **JSON-RPC 2.0** negotiation across modern stateless (`2026-07-28`) and legacy handshake (`2024-11-05`) specs, validates tool schemas against JSON Schema draft-07/2020-12, tracks breaking schema drift, scans for leaked API credentials, and renders dynamic vector status badges.
+Traditional uptime monitors stop at `HTTP 200 OK`. **MCP Sentinel** is a **Universal Protocol Sentinel** that connects over Streamable HTTP and SSE, conducts real **JSON-RPC 2.0** negotiation across all four official specifications (`2026-07-28`, `2025-11-25`, `2025-06-18`, and `2024-11-05`), validates tool schemas against JSON Schema draft-07/2020-12, tracks breaking schema drift, scans for leaked API credentials, and renders dynamic vector status badges.
 
 ---
 
 ## ⚡ Key Features
 
-* **Dual-Era Protocol Engine (`2026-07-28` & `2024-11-05`):** Forward and backward compatible. Supports both modern stateless `server/discover` and legacy session handshakes (`initialize` $\rightarrow$ `tools/list` $\rightarrow$ `resources/list`).
+* **Universal Protocol Negotiation (`2026-07-28`, `2025-11-25`, `2025-06-18`, `2024-11-05`):** Forward and backward compatible across all MCP eras. Supports modern stateless `server/discover`, icon/metadata exchange (`2025-11-25`), structured tool outputs (`outputSchema` from `2025-06-18`), and legacy session handshakes (`initialize` $\rightarrow$ `tools/list` $\rightarrow$ `resources/list`).
+* **Typed Output Verification (Smithery 100/100):** Validates both parameter schemas and structured `outputSchema` contracts to ensure remote tools never crash client LLMs with unexpected payload shapes.
 * **Real JSON-RPC 2.0 Handshake:** Subscribes to SSE streams, handles hybrid event frames, and benchmarks tool discovery latency in real time.
 * **Ajv Schema Validation:** Detects malformed tool input schemas, syntax errors, and missing property declarations.
 * **Breaking Schema Drift Detection:** Computes canonical SHA-256 hashes across tool definitions. Detects removed tools, deleted parameters, mutated parameter types, and newly added required fields.
@@ -24,7 +26,7 @@ Traditional uptime monitors stop at `HTTP 200 OK`. **MCP Sentinel** is a **Dual-
 
 ## 🔌 Connect as a Remote MCP Server
 
-MCP Sentinel is itself an official **hosted Remote MCP Server** supporting both modern stateless (`2026-07-28`) and legacy (`2024-11-05`) standards. You can connect your favorite AI assistant (Cursor, Claude Desktop, Windsurf, MindPal) directly to MCP Sentinel to audit any remote MCP server on-demand:
+MCP Sentinel is itself an official **hosted Remote MCP Server** supporting the full specification spectrum (`2026-07-28`, `2025-11-25`, `2025-06-18`, `2024-11-05`). You can connect your favorite AI assistant (Cursor, Claude Desktop, Windsurf, MindPal) directly to MCP Sentinel to audit any remote MCP server on-demand:
 
 - **Endpoint URL (Streamable HTTP):** `https://mcp-sentinel.pasihakamaki.workers.dev/mcp`
 - **SSE Transport URL:** `https://mcp-sentinel.pasihakamaki.workers.dev/sse`

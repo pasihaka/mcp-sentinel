@@ -1,7 +1,7 @@
 # Smithery MCP Server Configuration
 # https://smithery.ai/docs
 name: "mcp-sentinel"
-description: "Dual-Era autonomous synthetic health checks, JSON-RPC 2.0 handshake validation (2026-07-28 & 2024-11-05), breaking schema drift detection, and credential leak scanning for remote Model Context Protocol (MCP) servers."
+description: "Universal autonomous synthetic health checks, JSON-RPC 2.0 handshake validation across all specs (2026-07-28, 2025-11-25, 2025-06-18, 2024-11-05), breaking schema drift detection, and credential leak scanning for remote Model Context Protocol (MCP) servers."
 homepage: "https://mcp-sentinel.pasihakamaki.workers.dev"
 icon: "https://mcp-sentinel.pasihakamaki.workers.dev/icon.svg"
 
