@@ -1,0 +1,7 @@
+{
+  "$schema": "https://glama.ai/mcp/schemas/server.json",
+  "maintainers": ["pasihaka"],
+  "name": "mcp-sentinel",
+  "description": "Autonomous synthetic health checks, JSON-RPC 2.0 handshake validation, breaking schema drift detection, and credential leak scanning for remote Model Context Protocol (MCP) servers.",
+  "icon": "https://raw.githubusercontent.com/pasihaka/mcp-sentinel/main/icon.svg"
+}
