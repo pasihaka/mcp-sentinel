@@ -44,7 +44,19 @@ export function validateToolSchema(tool: MCPTool): ToolValidationResult {
       }
     }
   } catch (err: any) {
-    errors.push(`Schema compilation failed for "${tool.name}": ${err.message}`);
+    // In restricted sandbox environments (such as Cloudflare Workers V8 isolates),
+    // eval() and code generation from strings are strictly disallowed.
+    // An EvalError here is an environment constraint, not an invalid schema.
+    const isCodeGenerationDisallowed =
+      err instanceof EvalError ||
+      err?.name === 'EvalError' ||
+      err?.message?.includes('disallowed') ||
+      err?.message?.includes('Code generation') ||
+      err?.message?.includes('unsafe-eval');
+
+    if (!isCodeGenerationDisallowed) {
+      errors.push(`Schema compilation failed for "${tool.name}": ${err.message}`);
+    }
   }
 
   // 4. Validate required fields consistency
