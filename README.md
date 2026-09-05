@@ -57,7 +57,8 @@ MCP Sentinel is itself an official **hosted Remote MCP Server** supporting the f
 ```
 
 ### Available MCP Tools:
-* `audit_mcp_server(endpointUrl, authHeader?)`: Runs an instant synthetic audit on any remote MCP server, validating handshake, JSON-RPC 2.0 response format, schema validity, and secret exposure.
+* `audit_mcp_server(endpointUrl, authHeader?)`: Runs an instant comprehensive synthetic audit on any remote MCP server, validating JSON-RPC 2.0 compliance, response format, schema validity (Ajv), and secret exposure.
+* `verify_mcp_protocol(endpointUrl, authHeader?)`: Validates protocol compatibility and version negotiation across `2026-07-28`, `2025-11-25`, `2025-06-18`, and `2024-11-05` specs, benchmarking round-trip handshake latency.
 * `get_monitor_badge(monitorId)`: Returns public dynamic SVG status badge links and markdown embed snippets.
 
 ---

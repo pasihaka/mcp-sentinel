@@ -1,4 +1,5 @@
 import { executeSyntheticCheck } from '../core/synthetic-runner.js';
+import { RemoteMCPClient } from '../core/mcp-client.js';
 
 export interface JsonRpcRequest {
   jsonrpc: '2.0';
@@ -36,40 +37,119 @@ const MCP_TOOLS = [
   {
     name: 'audit_mcp_server',
     description:
-      'Performs real-time synthetic uptime verification, JSON-RPC 2.0 handshake check, schema validation, and credential leak scanning on any remote MCP server endpoint.',
+      'Performs an automated synthetic health, protocol compliance, schema validation, and credential security audit on any remote Model Context Protocol (MCP) server. Use this tool when you need to comprehensively verify whether an external MCP server is reachable, measure round-trip latency, validate tool schemas against JSON Schema draft-07/2020-12 specifications, detect broken parameter definitions, and check for exposed API tokens or credentials. Returns a detailed markdown diagnostic report and structured status flags.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         endpointUrl: {
           type: 'string',
+          format: 'uri',
+          minLength: 1,
           description:
-            'The remote MCP server HTTP or SSE URL to test (e.g. https://api.example.com/mcp or https://example.com/sse)',
+            'The public HTTP or SSE endpoint URL of the target remote MCP server to audit (e.g. "https://api.example.com/mcp" or "https://example.com/sse"). Must include http:// or https:// protocol scheme.',
+          examples: [
+            'https://mcp-sentinel.pasihakamaki.workers.dev/mcp',
+            'https://mcp.deepwiki.com/sse',
+          ],
         },
         authHeader: {
           type: 'string',
           description:
-            'Optional Authorization header value (e.g. "Bearer sk_..." or custom token) if the remote server requires authentication',
+            'Optional HTTP Authorization header value (e.g. "Bearer <token>" or custom token) if the remote MCP server requires authentication.',
+          examples: ['Bearer sample_token_abc123'],
         },
       },
       required: ['endpointUrl'],
     },
     outputSchema: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         content: {
           type: 'array',
+          description: 'Formatted diagnostic audit report and performance findings.',
           items: {
             type: 'object',
             properties: {
-              type: { type: 'string', description: 'Content MIME type' },
-              text: { type: 'string', description: 'Diagnostic audit report' },
+              type: { type: 'string', description: 'MIME type of output content (text/plain).' },
+              text: { type: 'string', description: 'Diagnostic audit report with latency, tools count, schema validity, and security status.' },
             },
             required: ['type', 'text'],
           },
         },
-        isError: { type: 'boolean', description: 'Whether the audit detected downtime or failure' },
+        isError: {
+          type: 'boolean',
+          description: 'True if the remote MCP server experienced downtime, failed the JSON-RPC handshake, or exposed leaked credentials.',
+        },
       },
-      required: ['content'],
+      required: ['content', 'isError'],
+    },
+    annotations: {
+      readOnlyHint: true,
+      idempotencyHint: true,
+      openWorldHint: true,
+    },
+  },
+  {
+    name: 'verify_mcp_protocol',
+    description:
+      'Validates JSON-RPC 2.0 protocol compatibility and version negotiation with a remote MCP server without executing a full synthetic vulnerability scan. Use this tool when you specifically need to test whether a remote server supports modern Stateless Core ("2026-07-28"), structured outputs ("2025-06-18"), icons metadata ("2025-11-25"), or legacy handshakes ("2024-11-05"), benchmark handshake latency, or inspect declared server capabilities and tool counts.',
+    inputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        endpointUrl: {
+          type: 'string',
+          format: 'uri',
+          minLength: 1,
+          description:
+            'The target remote MCP server endpoint URL to test (Streamable HTTP POST or SSE stream).',
+          examples: [
+            'https://mcp-sentinel.pasihakamaki.workers.dev/mcp',
+            'https://mcp.deepwiki.com/sse',
+          ],
+        },
+        authHeader: {
+          type: 'string',
+          description:
+            'Optional HTTP Authorization header value if the remote server requires authentication.',
+          examples: ['Bearer sample_token_abc123'],
+        },
+      },
+      required: ['endpointUrl'],
+    },
+    outputSchema: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        content: {
+          type: 'array',
+          description: 'Summary of the protocol handshake result.',
+          items: {
+            type: 'object',
+            properties: {
+              type: { type: 'string', description: 'Content MIME type.' },
+              text: { type: 'string', description: 'Markdown formatted handshake diagnostic summary.' },
+            },
+            required: ['type', 'text'],
+          },
+        },
+        protocolVersion: {
+          type: 'string',
+          description:
+            'The exact protocol version negotiated with the server (e.g. "2026-07-28", "2025-11-25", "2025-06-18", or "2024-11-05").',
+        },
+        latencyMs: {
+          type: 'number',
+          description: 'Round-trip handshake latency in milliseconds.',
+        },
+        isError: {
+          type: 'boolean',
+          description: 'True if the remote server failed to complete the MCP initialization handshake.',
+        },
+      },
+      required: ['content', 'isError'],
     },
     annotations: {
       readOnlyHint: true,
@@ -80,34 +160,43 @@ const MCP_TOOLS = [
   {
     name: 'get_monitor_badge',
     description:
-      'Generates the public SVG status badge URL and Markdown embed snippet for an MCP Sentinel monitor.',
+      'Generates dynamic SVG status badge links and Markdown embed snippets for an MCP Sentinel uptime monitor. Use this tool when you want to display the real-time operational status, protocol version, and uptime badge of a monitored MCP server directly inside a GitHub repository README, developer documentation, or status page.',
     inputSchema: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         monitorId: {
           type: 'string',
-          description: 'The monitor ID or identifier',
+          minLength: 1,
+          description:
+            'The unique identifier of the monitor (or "sample" / "demo" to preview a demonstration badge).',
+          examples: ['demo', 'mon_prod_01', 'sample'],
         },
       },
       required: ['monitorId'],
     },
     outputSchema: {
       type: 'object',
+      additionalProperties: false,
       properties: {
         content: {
           type: 'array',
+          description: 'Generated SVG badge URLs and copy-paste markdown embed snippet.',
           items: {
             type: 'object',
             properties: {
-              type: { type: 'string', description: 'Content MIME type' },
-              text: { type: 'string', description: 'Badge URLs and markdown snippets' },
+              type: { type: 'string', description: 'Content MIME type.' },
+              text: { type: 'string', description: 'Badge URL and Markdown snippet.' },
             },
             required: ['type', 'text'],
           },
         },
-        isError: { type: 'boolean', description: 'Whether an error occurred' },
+        isError: {
+          type: 'boolean',
+          description: 'Whether an error occurred while generating badge snippets.',
+        },
       },
-      required: ['content'],
+      required: ['content', 'isError'],
     },
     annotations: {
       readOnlyHint: true,
@@ -296,6 +385,68 @@ export async function handleJsonRpcMessage(
             isError: false,
           },
         };
+      }
+
+      if (toolName === 'verify_mcp_protocol') {
+        if (!args.endpointUrl || typeof args.endpointUrl !== 'string') {
+          return {
+            jsonrpc: '2.0',
+            id,
+            result: {
+              content: [
+                {
+                  type: 'text',
+                  text: 'Error: Missing or invalid required argument "endpointUrl". Must be a valid HTTP or SSE URL.',
+                },
+              ],
+              isError: true,
+            },
+          };
+        }
+
+        const headers: Record<string, string> = {};
+        if (args.authHeader && typeof args.authHeader === 'string') {
+          headers['Authorization'] = args.authHeader;
+        }
+
+        const client = new RemoteMCPClient(args.endpointUrl, { headers, timeoutMs: 8000 });
+        try {
+          const discovery = await client.runDiscovery();
+          let text = `## Protocol Handshake Verification: SUCCESS\n\n`;
+          text += `- **Endpoint:** \`${args.endpointUrl}\`\n`;
+          text += `- **Negotiated Protocol Version:** \`${discovery.protocolVersion}\`\n`;
+          text += `- **Round-Trip Handshake Latency:** ${discovery.latencyMs} ms\n`;
+          text += `- **Server Name:** ${discovery.serverInfo.name}\n`;
+          text += `- **Server Version:** ${discovery.serverInfo.version}\n`;
+          text += `- **Discovered Tools Count:** ${discovery.tools.length}\n`;
+          text += `- **Discovered Resources Count:** ${discovery.resources.length}\n`;
+          text += `- **Discovered Prompts Count:** ${discovery.prompts.length}\n`;
+
+          return {
+            jsonrpc: '2.0',
+            id,
+            result: {
+              content: [{ type: 'text', text }],
+              protocolVersion: discovery.protocolVersion,
+              latencyMs: discovery.latencyMs,
+              isError: false,
+            },
+          };
+        } catch (err: any) {
+          return {
+            jsonrpc: '2.0',
+            id,
+            result: {
+              content: [
+                {
+                  type: 'text',
+                  text: `## Protocol Handshake Verification: FAILED\n\n- **Endpoint:** \`${args.endpointUrl}\`\n- **Error:** ${err?.message || 'Handshake failed'}\n\nThe target server did not complete standard MCP JSON-RPC 2.0 handshake initialization.`,
+                },
+              ],
+              isError: true,
+            },
+          };
+        }
       }
 
       return {

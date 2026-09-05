@@ -20,7 +20,10 @@ describe('MCP Server Protocol Endpoint (/mcp & /sse)', () => {
     expect(data.supportedProtocols).toContain('2025-06-18');
     expect(data.supportedProtocols).toContain('2024-11-05');
     expect(Array.isArray(data.tools)).toBe(true);
+    expect(data.tools.length).toBe(3);
     expect(data.tools.some((t: any) => t.name === 'audit_mcp_server')).toBe(true);
+    expect(data.tools.some((t: any) => t.name === 'verify_mcp_protocol')).toBe(true);
+    expect(data.tools.some((t: any) => t.name === 'get_monitor_badge')).toBe(true);
   });
 
   it('handles "server/discover" method (2026-07-28 stateless spec)', async () => {
@@ -195,6 +198,28 @@ describe('MCP Server Protocol Endpoint (/mcp & /sse)', () => {
         method: 'tools/call',
         params: {
           name: 'audit_mcp_server',
+          arguments: {},
+        },
+      }),
+    });
+
+    const res = await handleMcpHttpRequest(req, originUrl, corsHeaders);
+    const json: any = await res.json();
+
+    expect(json.result.isError).toBe(true);
+    expect(json.result.content[0].text).toContain('Missing or invalid required argument');
+  });
+
+  it('handles "tools/call" for verify_mcp_protocol with missing arguments', async () => {
+    const req = new Request(`${originUrl}/mcp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 5,
+        method: 'tools/call',
+        params: {
+          name: 'verify_mcp_protocol',
           arguments: {},
         },
       }),
