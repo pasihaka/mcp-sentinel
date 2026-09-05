@@ -242,6 +242,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
     </nav>
 
     <section class="hero">
+      <div style="display: inline-block; background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; color: #60a5fa; border-radius: 9999px; padding: 0.3rem 0.9rem; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem;">✨ Dual-Era Protocol Ready: 2026-07-28 (Stateless Core) &amp; 2024-11-05</div>
       <h1>Synthetic Health & Schema Drift Sentinel for Remote MCP Servers</h1>
       <p>Traditional uptime monitors stop at HTTP 200. MCP Sentinel executes real JSON-RPC 2.0 protocol handshakes, detects breaking tool schema mutations, and prevents AI agents from crashing.</p>
     </section>
@@ -299,6 +300,11 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <td><strong>Protocol Awareness</strong></td>
             <td>HTTP status code only (200 OK)</td>
             <td>Full JSON-RPC 2.0 Handshake & Protocol Negotiation</td>
+          </tr>
+          <tr>
+            <td><strong>Dual-Era Support</strong></td>
+            <td>❌ Legacy or custom only</td>
+            <td>✅ Modern 2026-07-28 Stateless Core &amp; 2024-11-05 Handshake</td>
           </tr>
           <tr>
             <td><strong>SSE Event Handshake</strong></td>

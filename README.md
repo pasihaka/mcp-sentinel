@@ -6,13 +6,14 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 
-Traditional uptime monitors stop at `HTTP 200 OK`. **MCP Sentinel** connects over Server-Sent Events (SSE) and HTTP POST, conducts real **JSON-RPC 2.0** protocol handshakes, validates tool schemas against JSON Schema draft-07/2020-12, tracks breaking schema drift, scans for leaked API credentials, and renders dynamic vector status badges.
+Traditional uptime monitors stop at `HTTP 200 OK`. **MCP Sentinel** is a **Dual-Era** sentinel that connects over Streamable HTTP and SSE, conducts real **JSON-RPC 2.0** negotiation across modern stateless (`2026-07-28`) and legacy handshake (`2024-11-05`) specs, validates tool schemas against JSON Schema draft-07/2020-12, tracks breaking schema drift, scans for leaked API credentials, and renders dynamic vector status badges.
 
 ---
 
 ## ⚡ Key Features
 
-* **Real JSON-RPC 2.0 Handshake:** Subscribes to SSE streams, negotiates protocol version `2024-11-05`, calls `initialize` $\rightarrow$ `tools/list` $\rightarrow$ `resources/list`.
+* **Dual-Era Protocol Engine (`2026-07-28` & `2024-11-05`):** Forward and backward compatible. Supports both modern stateless `server/discover` and legacy session handshakes (`initialize` $\rightarrow$ `tools/list` $\rightarrow$ `resources/list`).
+* **Real JSON-RPC 2.0 Handshake:** Subscribes to SSE streams, handles hybrid event frames, and benchmarks tool discovery latency in real time.
 * **Ajv Schema Validation:** Detects malformed tool input schemas, syntax errors, and missing property declarations.
 * **Breaking Schema Drift Detection:** Computes canonical SHA-256 hashes across tool definitions. Detects removed tools, deleted parameters, mutated parameter types, and newly added required fields.
 * **Secret & Credential Scanner:** Audits tool descriptions and parameters for exposed OpenAI/Anthropic API keys, AWS credentials, and hardcoded database connection strings with automated redaction.
@@ -23,7 +24,7 @@ Traditional uptime monitors stop at `HTTP 200 OK`. **MCP Sentinel** connects ove
 
 ## 🔌 Connect as a Remote MCP Server
 
-MCP Sentinel is itself an official **hosted Remote MCP Server** (`mcp/2024-11-05` standard). You can connect your favorite AI assistant (Cursor, Claude Desktop, Windsurf, MindPal) directly to MCP Sentinel to audit any remote MCP server on-demand:
+MCP Sentinel is itself an official **hosted Remote MCP Server** supporting both modern stateless (`2026-07-28`) and legacy (`2024-11-05`) standards. You can connect your favorite AI assistant (Cursor, Claude Desktop, Windsurf, MindPal) directly to MCP Sentinel to audit any remote MCP server on-demand:
 
 - **Endpoint URL (Streamable HTTP):** `https://mcp-sentinel.pasihakamaki.workers.dev/mcp`
 - **SSE Transport URL:** `https://mcp-sentinel.pasihakamaki.workers.dev/sse`
