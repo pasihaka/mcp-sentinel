@@ -121,6 +121,23 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
     }
     button:hover { background: var(--accent-hover); }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .chip-btn {
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .chip-btn:hover {
+      background: #334155;
+      color: #f8fafc;
+      border-color: #64748b;
+    }
     .results-area {
       display: none;
       margin-top: 1.5rem;
@@ -256,6 +273,13 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         <button id="auditBtn" onclick="runAudit()">Run Instant Audit</button>
       </div>
       <div style="font-size: 0.8rem; color: var(--muted);">Tests JSON-RPC 2.0 handshake, schema validity (Ajv), tool drift, and secret leaks in &lt;500ms.</div>
+      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
+        <span style="font-size: 0.8rem; color: var(--muted);">Live Benchmarks:</span>
+        <button type="button" class="chip-btn" onclick="selectPreset('https://knowledge-mcp.global.api.aws')">⚡ AWS Knowledge (280ms)</button>
+        <button type="button" class="chip-btn" onclick="selectPreset('https://2ools.app/mcp')">🚨 2ools (33k tokens, 81 tools)</button>
+        <button type="button" class="chip-btn" onclick="selectPreset('https://reachpad.dev/mcp')">Reachpad (18 tools)</button>
+        <button type="button" class="chip-btn" onclick="selectPreset('https://mcp-sentinel.pasihakamaki.workers.dev/mcp')">MCP Sentinel (Self)</button>
+      </div>
 
       <div class="results-area" id="resultsArea">
         <div class="grid-stats">
@@ -455,6 +479,11 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       const code = document.getElementById('badgeMarkdown').innerText;
       navigator.clipboard.writeText(code);
       alert('Copied badge Markdown to clipboard!');
+    }
+
+    function selectPreset(url) {
+      document.getElementById('endpointInput').value = url;
+      runAudit();
     }
   </script>
 </body>
