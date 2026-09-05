@@ -195,7 +195,20 @@ export class RemoteMCPClient {
         throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
       }
 
-      const body: JsonRpcResponse<T> = await response.json();
+      const rawText = await response.text();
+      let body: JsonRpcResponse<T>;
+
+      try {
+        body = JSON.parse(rawText);
+      } catch {
+        // Support SSE-framed responses (event: message\ndata: {...})
+        const dataMatch = rawText.match(/data:\s*(\{[\s\S]*\})/);
+        if (dataMatch && dataMatch[1]) {
+          body = JSON.parse(dataMatch[1]);
+        } else {
+          throw new Error(`Failed to parse JSON-RPC response: ${rawText.slice(0, 120)}`);
+        }
+      }
 
       if (body.error) {
         throw new Error(`JSON-RPC Error [${body.error.code}]: ${body.error.message}`);
