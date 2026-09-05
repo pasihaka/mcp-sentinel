@@ -16,6 +16,8 @@ describe('MCP Server Protocol Endpoint (/mcp & /sse)', () => {
     expect(data.name).toBe('mcp-sentinel');
     expect(data.protocol).toBe('mcp/2026-07-28');
     expect(data.supportedProtocols).toContain('2026-07-28');
+    expect(data.supportedProtocols).toContain('2025-11-25');
+    expect(data.supportedProtocols).toContain('2025-06-18');
     expect(data.supportedProtocols).toContain('2024-11-05');
     expect(Array.isArray(data.tools)).toBe(true);
     expect(data.tools.some((t: any) => t.name === 'audit_mcp_server')).toBe(true);
@@ -81,6 +83,31 @@ describe('MCP Server Protocol Endpoint (/mcp & /sse)', () => {
     expect(json.result.serverInfo.name).toBe('mcp-sentinel');
     expect(json.result.protocolVersion).toBe('2024-11-05');
     expect(json.result.capabilities.tools).toBeDefined();
+  });
+
+  it('negotiates 2025-11-25 when requested by modern 2025 client', async () => {
+    const req = new Request(`${originUrl}/mcp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 2,
+        method: 'initialize',
+        params: {
+          protocolVersion: '2025-11-25',
+          capabilities: {},
+          clientInfo: { name: 'Claude Desktop', version: '0.9.0' },
+        },
+      }),
+    });
+
+    const res = await handleMcpHttpRequest(req, originUrl, corsHeaders);
+    expect(res.status).toBe(200);
+
+    const json: any = await res.json();
+    expect(json.jsonrpc).toBe('2.0');
+    expect(json.id).toBe(2);
+    expect(json.result.protocolVersion).toBe('2025-11-25');
   });
 
   it('handles "notifications/initialized" with 204 No Content', async () => {

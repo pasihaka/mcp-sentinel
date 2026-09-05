@@ -145,8 +145,15 @@ export async function handleJsonRpcMessage(
 
     case 'initialize': {
       const requestedVersion = req.params?.protocolVersion;
-      const negotiatedVersion =
-        requestedVersion === '2026-07-28' ? '2026-07-28' : '2024-11-05';
+      const SUPPORTED_PROTOCOLS = [
+        '2026-07-28',
+        '2025-11-25',
+        '2025-06-18',
+        '2024-11-05',
+      ];
+      const negotiatedVersion = SUPPORTED_PROTOCOLS.includes(requestedVersion)
+        ? requestedVersion
+        : '2025-11-25';
       return {
         jsonrpc: '2.0',
         id,
@@ -346,7 +353,7 @@ export async function handleMcpHttpRequest(
           status: 'operational',
           version: '1.0.0',
           protocol: 'mcp/2026-07-28',
-          supportedProtocols: ['2026-07-28', '2024-11-05'],
+          supportedProtocols: ['2026-07-28', '2025-11-25', '2025-06-18', '2024-11-05'],
           transport: 'Streamable HTTP (POST /mcp) or SSE (GET /sse)',
           tools: MCP_TOOLS.map(t => ({ name: t.name, description: t.description })),
           documentation: 'https://github.com/pasihaka/mcp-sentinel',
