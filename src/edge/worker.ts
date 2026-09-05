@@ -112,6 +112,47 @@ export default {
         });
       }
 
+      // Dynamic SVG Status & Schema Badges (/badge/:id/status.svg and /badge/:id/schema.svg)
+      const badgeMatch = url.pathname.match(/^\/badge\/([^/]+)\/(status|schema)\.svg$/);
+      if (badgeMatch && request.method === 'GET') {
+        const monitorId = badgeMatch[1];
+        const badgeType = badgeMatch[2];
+
+        let status: CheckStatus = 'operational';
+        let hasDrift = false;
+        let isBreaking = false;
+
+        if (monitorId !== 'demo' && monitorId !== 'sample' && env.DB) {
+          try {
+            const monitor = await env.DB.prepare(
+              'SELECT last_status, last_schema_hash, current_schema_hash FROM monitors WHERE id = ?'
+            ).bind(monitorId).first<{ last_status?: string; last_schema_hash?: string; current_schema_hash?: string }>();
+
+            if (monitor?.last_status) {
+              status = monitor.last_status as CheckStatus;
+              if (monitor.last_schema_hash && monitor.current_schema_hash && monitor.last_schema_hash !== monitor.current_schema_hash) {
+                hasDrift = true;
+              }
+            }
+          } catch (e) {
+            // fallback to operational on DB query error
+          }
+        }
+
+        const svgContent = badgeType === 'schema'
+          ? generateSchemaBadge(hasDrift, isBreaking)
+          : generateStatusBadge(status);
+
+        return new Response(svgContent, {
+          status: 200,
+          headers: {
+            ...CORS_HEADERS,
+            'Content-Type': 'image/svg+xml; charset=utf-8',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+          },
+        });
+      }
+
       // 3. Hosted Remote MCP Server Protocol Endpoint (Streamable HTTP & SSE)
       if (url.pathname === '/mcp' || url.pathname === '/sse') {
         return handleMcpHttpRequest(request, url.origin, CORS_HEADERS);
