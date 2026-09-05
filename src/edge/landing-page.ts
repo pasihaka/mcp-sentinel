@@ -236,7 +236,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         <span class="logo-badge">EDGE</span>
       </div>
       <div>
-        <a href="https://smithery.ai/server/@pasihakamaki/mcp-sentinel" target="_blank" rel="noopener" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Smithery 100/100 ↗</a>
+        <a href="https://smithery.ai/servers/pasihakamaki/mcp-sentinel" target="_blank" rel="noopener" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Smithery 100/100 ↗</a>
         <a href="https://glama.ai/mcp/servers/pasihaka/mcp-sentinel" target="_blank" rel="noopener" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Glama Verified ↗</a>
         <a href="#pricing" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Pricing</a>
         <a href="#comparison" style="color: var(--muted); text-decoration: none; font-size: 0.85rem;">Why MCP Sentinel?</a>
@@ -380,6 +380,16 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         </div>
       </div>
     </section>
+
+    <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+      <div>
+        <a href="https://smithery.ai/servers/pasihakamaki/mcp-sentinel" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #9ca3af; text-decoration: none;">
+          <img src="https://smithery.ai/badge/pasihakamaki/mcp-sentinel" alt="smithery badge" style="vertical-align: middle; height: 20px;">
+          <span>Official Smithery Registry Listing</span>
+        </a>
+      </div>
+      <div>&copy; 2026 MCP Sentinel. Autonomous Synthetic Protocol Reliability for Remote AI Agents.</div>
+    </footer>
   </div>
 
   <script>

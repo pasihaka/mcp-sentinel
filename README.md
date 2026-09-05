@@ -3,7 +3,7 @@
 **Autonomous Protocol Health, Schema-Drift & Security Sentinel for Remote Model Context Protocol (MCP) Servers.**
 
 [![MCP Status](https://img.shields.io/badge/mcp-operational-4c1)](https://github.com/pasihaka/mcp-sentinel)
-[![Smithery](https://smithery.ai/badge/@pasihakamaki/mcp-sentinel)](https://smithery.ai/server/@pasihakamaki/mcp-sentinel)
+[![smithery badge](https://smithery.ai/badge/pasihakamaki/mcp-sentinel)](https://smithery.ai/servers/pasihakamaki/mcp-sentinel)
 [![Glama](https://glama.ai/mcp/servers/pasihaka/mcp-sentinel/badge)](https://glama.ai/mcp/servers/pasihaka/mcp-sentinel)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
@@ -31,7 +31,7 @@ MCP Sentinel is itself an official **hosted Remote MCP Server** supporting the f
 
 - **Endpoint URL (Streamable HTTP):** `https://mcp-sentinel.pasihakamaki.workers.dev/mcp`
 - **SSE Transport URL:** `https://mcp-sentinel.pasihakamaki.workers.dev/sse`
-- **Official Registries:** [Smithery.ai](https://smithery.ai/server/@pasihakamaki/mcp-sentinel) (100/100 Quality Score & Typed Output) &bull; [Glama.ai](https://glama.ai/mcp/servers/pasihaka/mcp-sentinel) (Verified)
+- **Official Registries:** [Smithery.ai](https://smithery.ai/servers/pasihakamaki/mcp-sentinel) (100/100 Quality Score & Typed Output) &bull; [Glama.ai](https://glama.ai/mcp/servers/pasihaka/mcp-sentinel) (Verified)
 
 ### Cursor (`mcp.json`)
 ```json
