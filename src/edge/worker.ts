@@ -90,7 +90,7 @@ export default {
       }
 
       // Public Icon Endpoint for Registries (Smithery, Glama, etc.)
-      if (url.pathname === '/icon.svg' && request.method === 'GET') {
+      if (url.pathname === '/icon.svg' && (request.method === 'GET' || request.method === 'HEAD')) {
         const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
   <defs>
     <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -99,10 +99,10 @@ export default {
     </linearGradient>
   </defs>
   <rect width="128" height="128" rx="28" fill="url(#g)"/>
-  <path d="M64 24 L94 38 V66 C94 86 64 104 64 104 C64 104 34 86 34 66 V38 Z" fill="none" stroke="#ffffff" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M48 64 L58 64 L64 50 L70 76 L76 64 L82 64" fill="none" stroke="#22c55e" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M64 22 L96 36 V62 C96 82 82 100 64 106 C46 100 32 82 32 62 V36 Z" fill="none" stroke="#ffffff" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M48 64 L58 74 L80 50" fill="none" stroke="#10b981" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
-        return new Response(svg, {
+        return new Response(request.method === 'HEAD' ? null : svg, {
           status: 200,
           headers: {
             ...CORS_HEADERS,
@@ -114,7 +114,7 @@ export default {
 
       // Dynamic SVG Status & Schema Badges (/badge/:id/status.svg and /badge/:id/schema.svg)
       const badgeMatch = url.pathname.match(/^\/badge\/([^/]+)\/(status|schema)\.svg$/);
-      if (badgeMatch && request.method === 'GET') {
+      if (badgeMatch && (request.method === 'GET' || request.method === 'HEAD')) {
         const monitorId = badgeMatch[1];
         const badgeType = badgeMatch[2];
 
