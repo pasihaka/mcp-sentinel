@@ -5,9 +5,10 @@
   "description": "Autonomous Protocol Health, Schema-Drift & Security Sentinel for Remote Model Context Protocol Servers",
   "main": "dist/worker.js",
   "bin": {
-    "mcp-sentinel": "dist/src/cli/stdio-server.js"
+    "mcp-sentinel": "./bin/mcp-sentinel.js"
   },
   "scripts": {
+    "start": "node ./bin/mcp-sentinel.js",
     "build": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",

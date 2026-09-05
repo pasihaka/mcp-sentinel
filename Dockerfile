@@ -10,7 +10,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install --omit=dev
 COPY --from=builder /app/dist ./dist
+COPY bin/ ./bin/
+RUN chmod +x ./bin/mcp-sentinel.js
 
 ENV PORT=8787
 EXPOSE 8787
-CMD ["node", "dist/src/cli/stdio-server.js"]
+CMD ["node", "bin/mcp-sentinel.js"]
