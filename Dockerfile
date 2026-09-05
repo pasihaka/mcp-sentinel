@@ -13,4 +13,4 @@ COPY --from=builder /app/dist ./dist
 
 ENV PORT=8787
 EXPOSE 8787
-CMD ["node", "-e", "console.log('MCP Sentinel runtime ready')"]
+CMD ["node", "dist/src/cli/stdio-server.js"]
