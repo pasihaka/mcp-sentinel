@@ -14,9 +14,32 @@ describe('MCP Server Protocol Endpoint (/mcp & /sse)', () => {
 
     const data: any = await res.json();
     expect(data.name).toBe('mcp-sentinel');
-    expect(data.protocol).toBe('mcp/2024-11-05');
+    expect(data.protocol).toBe('mcp/2026-07-28');
+    expect(data.supportedProtocols).toContain('2026-07-28');
+    expect(data.supportedProtocols).toContain('2024-11-05');
     expect(Array.isArray(data.tools)).toBe(true);
     expect(data.tools.some((t: any) => t.name === 'audit_mcp_server')).toBe(true);
+  });
+
+  it('handles "server/discover" method (2026-07-28 stateless spec)', async () => {
+    const req = new Request(`${originUrl}/mcp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 99,
+        method: 'server/discover',
+      }),
+    });
+
+    const res = await handleMcpHttpRequest(req, originUrl, corsHeaders);
+    expect(res.status).toBe(200);
+
+    const json: any = await res.json();
+    expect(json.jsonrpc).toBe('2.0');
+    expect(json.id).toBe(99);
+    expect(json.result.protocolVersion).toBe('2026-07-28');
+    expect(json.result.serverInfo.name).toBe('mcp-sentinel');
   });
 
   it('GET /sse with Accept text/event-stream returns SSE endpoint event', async () => {

@@ -132,16 +132,31 @@ export async function handleJsonRpcMessage(
   }
 
   switch (req.method) {
-    case 'initialize':
+    case 'server/discover':
       return {
         jsonrpc: '2.0',
         id,
         result: {
-          protocolVersion: '2024-11-05',
+          protocolVersion: '2026-07-28',
           capabilities: MCP_CAPABILITIES,
           serverInfo: MCP_SERVER_INFO,
         },
       };
+
+    case 'initialize': {
+      const requestedVersion = req.params?.protocolVersion;
+      const negotiatedVersion =
+        requestedVersion === '2026-07-28' ? '2026-07-28' : '2024-11-05';
+      return {
+        jsonrpc: '2.0',
+        id,
+        result: {
+          protocolVersion: negotiatedVersion,
+          capabilities: MCP_CAPABILITIES,
+          serverInfo: MCP_SERVER_INFO,
+        },
+      };
+    }
 
     case 'notifications/initialized':
     case 'initialized':
@@ -330,7 +345,8 @@ export async function handleMcpHttpRequest(
             'Hosted Model Context Protocol (MCP) server for synthetic monitoring, handshake validation, and schema drift detection.',
           status: 'operational',
           version: '1.0.0',
-          protocol: 'mcp/2024-11-05',
+          protocol: 'mcp/2026-07-28',
+          supportedProtocols: ['2026-07-28', '2024-11-05'],
           transport: 'Streamable HTTP (POST /mcp) or SSE (GET /sse)',
           tools: MCP_TOOLS.map(t => ({ name: t.name, description: t.description })),
           documentation: 'https://github.com/pasihaka/mcp-sentinel',
