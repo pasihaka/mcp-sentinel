@@ -501,6 +501,10 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           <span>💬</span>
           <span>Developer Support</span>
         </a>
+        <a href="mailto:mcpsentinel@gmail.com" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: #111827; border: 1px solid #1f2937; border-radius: 9999px; color: #f472b6; text-decoration: none; font-size: 0.8rem; font-weight: 500;">
+          <span>✉️</span>
+          <span>mcpsentinel@gmail.com</span>
+        </a>
       </div>
       <div>&copy; 2026 MCP Sentinel. Autonomous Synthetic Protocol Reliability for Remote AI Agents.</div>
     </footer>
