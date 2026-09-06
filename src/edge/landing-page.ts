@@ -334,7 +334,14 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         <input type="text" id="endpointInput" placeholder="https://your-mcp-server.com/sse or /mcp" value="https://mcp-sentinel.pasihakamaki.workers.dev/mcp">
         <button id="auditBtn" onclick="runAudit()">Run Instant Audit</button>
       </div>
-      <div style="font-size: 0.8rem; color: var(--muted);">Tests JSON-RPC 2.0 handshake, schema validity (Ajv), tool drift, and secret leaks in &lt;500ms.</div>
+      <div style="margin-top: 0.4rem; text-align: left;">
+        <button type="button" id="toggleAuthBtn" onclick="toggleAuthInput()" style="background: none; border: none; color: #60a5fa; font-size: 0.8rem; cursor: pointer; padding: 0;">+ Add Bearer Token / Auth Header (Optional)</button>
+        <div id="authInputWrapper" style="display: none; margin-top: 0.4rem;">
+          <input type="text" id="authInput" placeholder="Bearer your-connector-access-token" style="width: 100%; background: #0b1120; border: 1px solid var(--border); color: #fff; padding: 0.6rem 0.8rem; border-radius: 8px; font-size: 0.85rem; box-sizing: border-box;">
+          <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem;">Used solely for this handshake probe; never stored or logged in public audits.</div>
+        </div>
+      </div>
+      <div style="font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem;">Tests JSON-RPC 2.0 handshake, schema validity (Ajv), tool drift, and secret leaks in &lt;500ms.</div>
       <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
         <span style="font-size: 0.8rem; color: var(--muted);">Live Benchmarks:</span>
         <button type="button" class="chip-btn" onclick="selectPreset('https://knowledge-mcp.global.api.aws')">⚡ AWS Knowledge (280ms)</button>
@@ -344,6 +351,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       </div>
 
       <div class="results-area" id="resultsArea">
+        <div id="auditAlertNotice" style="display: none; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem; text-align: left;"></div>
         <div class="grid-stats">
           <div class="stat-box">
             <div class="stat-label">Verdict</div>
@@ -358,9 +366,9 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <div class="stat-value" id="toolsVal">6 tools</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Prompt Token Cost</div>
-            <div class="stat-value" id="tokensVal" style="color: #60a5fa;">~1,315 tokens</div>
-            <div style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;" id="schemaKbVal">5.2 KB schema</div>
+            <div class="stat-label">Prompt Context Tax</div>
+            <div class="stat-value" id="tokensVal" style="color: #10b981;">~1,315 tokens</div>
+            <div style="font-size: 0.75rem; margin-top: 0.25rem;" id="tokensCostVal"><span style="color: #10b981; font-weight: 600;">⚡ Lean (+$0.004/turn)</span></div>
           </div>
           <div class="stat-box">
             <div class="stat-label">Security Scan</div>
@@ -514,6 +522,14 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           </div>
 
           <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <label style="margin-bottom: 0;">Authorization Header (Optional)</label>
+              <span style="font-size: 0.72rem; color: var(--muted);">For connector / protected servers</span>
+            </div>
+            <input type="text" id="mAuthHeader" placeholder="Bearer your-connector-access-token" style="width: 100%;">
+          </div>
+
+          <div class="form-group">
             <label>Check Frequency</label>
             <select id="mInterval" style="width: 100%; background: #0b1120; border: 1px solid var(--border); color: #fff; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem;">
               <option value="1800">Every 30 minutes (Free)</option>
@@ -565,35 +581,84 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
   </div>
 
   <script>
+    function toggleAuthInput() {
+      const w = document.getElementById('authInputWrapper');
+      const b = document.getElementById('toggleAuthBtn');
+      if (w.style.display === 'none' || !w.style.display) {
+        w.style.display = 'block';
+        b.innerText = '- Hide Authorization Header';
+        document.getElementById('authInput').focus();
+      } else {
+        w.style.display = 'none';
+        b.innerText = '+ Add Bearer Token / Auth Header (Optional)';
+      }
+    }
+
     async function runAudit() {
       const btn = document.getElementById('auditBtn');
       const endpoint = document.getElementById('endpointInput').value.trim();
       const resultsArea = document.getElementById('resultsArea');
+      const alertBox = document.getElementById('auditAlertNotice');
+      const authHeader = document.getElementById('authInput') ? document.getElementById('authInput').value.trim() : '';
 
       if (!endpoint) return;
 
       btn.disabled = true;
       btn.innerText = 'Auditing Handshake...';
 
+      const payload = { endpointUrl: endpoint };
+      if (authHeader) {
+        payload.authHeader = authHeader;
+      }
+
       try {
         const res = await fetch('/api/check-now', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ endpointUrl: endpoint })
+          body: JSON.stringify(payload)
         });
 
         const data = await res.json();
 
         resultsArea.style.display = 'block';
         document.getElementById('verdictVal').innerText = (data.status || 'OPERATIONAL').toUpperCase();
-        document.getElementById('verdictVal').style.color = data.status === 'operational' ? '#10b981' : '#ef4444';
+        document.getElementById('verdictVal').style.color = data.status === 'operational' ? '#10b981' : (data.status === 'degraded' ? '#f59e0b' : '#ef4444');
         document.getElementById('latencyVal').innerText = (data.latencyMs || 0) + 'ms';
         document.getElementById('toolsVal').innerText = (data.toolsCount || 0) + ' tools';
+
+        if (data.status !== 'operational') {
+          alertBox.style.display = 'block';
+          if (data.errorMessage && data.errorMessage.indexOf('401') !== -1) {
+            alertBox.innerHTML = '🔒 <strong>401 Unauthorized:</strong> This MCP server requires authentication. Enter your Bearer token in the field above and click <em>Run Instant Audit</em> again.';
+            alertBox.style.background = 'rgba(245, 158, 11, 0.15)';
+            alertBox.style.border = '1px solid #f59e0b';
+            alertBox.style.color = '#fde68a';
+          } else {
+            alertBox.innerHTML = '⚠️ <strong>Handshake Warning:</strong> ' + (data.errorMessage || 'Server returned non-operational status or schema anomalies.');
+            alertBox.style.background = 'rgba(239, 68, 68, 0.15)';
+            alertBox.style.border = '1px solid #ef4444';
+            alertBox.style.color = '#fca5a5';
+          }
+        } else {
+          alertBox.style.display = 'none';
+        }
         
-        const approxTokens = data.approxContextTokens || Math.round((data.schemaSizeBytes || (data.toolsCount * 650)) / 4);
-        const schemaKb = data.schemaSizeBytes ? (data.schemaSizeBytes / 1024).toFixed(1) + ' KB schema' : '';
-        document.getElementById('tokensVal').innerText = '~' + Number(approxTokens).toLocaleString() + ' tokens';
-        document.getElementById('schemaKbVal').innerText = schemaKb || 'Schema verified';
+        const approxTokens = data.approxContextTokens || (data.schemaSizeBytes ? Math.round(data.schemaSizeBytes / 4) : Math.round((data.toolsCount || 0) * 650 / 4));
+        const sonnetCost = ((approxTokens / 1000000) * 3).toFixed(3);
+        const tokensEl = document.getElementById('tokensVal');
+        tokensEl.innerText = '~' + Number(approxTokens).toLocaleString() + ' tokens';
+
+        const costEl = document.getElementById('tokensCostVal');
+        if (approxTokens >= 15000) {
+          tokensEl.style.color = '#ef4444';
+          costEl.innerHTML = '<span style="color: #ef4444; font-weight: 600;">⚠️ Heavy Tax (+$' + sonnetCost + '/turn)</span>';
+        } else if (approxTokens >= 5000) {
+          tokensEl.style.color = '#f59e0b';
+          costEl.innerHTML = '<span style="color: #f59e0b; font-weight: 600;">Moderate (+$' + sonnetCost + '/turn)</span>';
+        } else {
+          tokensEl.style.color = '#10b981';
+          costEl.innerHTML = '<span style="color: #10b981; font-weight: 600;">⚡ Lean (+$' + sonnetCost + '/turn)</span>';
+        }
 
         const secVal = document.getElementById('securityVal');
         if (data.secretFindings && data.secretFindings.length > 0) {
@@ -606,11 +671,13 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       } catch (err) {
         // Fallback demo values for offline viewing
         resultsArea.style.display = 'block';
+        alertBox.style.display = 'none';
         document.getElementById('verdictVal').innerText = 'OPERATIONAL';
         document.getElementById('latencyVal').innerText = '38ms';
         document.getElementById('toolsVal').innerText = '2 tools';
         document.getElementById('tokensVal').innerText = '~1,315 tokens';
-        document.getElementById('schemaKbVal').innerText = '5.2 KB schema';
+        document.getElementById('tokensVal').style.color = '#10b981';
+        document.getElementById('tokensCostVal').innerHTML = '<span style="color: #10b981; font-weight: 600;">⚡ Lean (+$0.004/turn)</span>';
         document.getElementById('securityVal').innerText = 'Clean';
       } finally {
         btn.disabled = false;
@@ -645,6 +712,11 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           document.getElementById('mName').value = 'Production MCP';
         }
       }
+
+      const authVal = document.getElementById('authInput') ? document.getElementById('authInput').value.trim() : '';
+      if (authVal && document.getElementById('mAuthHeader')) {
+        document.getElementById('mAuthHeader').value = authVal;
+      }
     }
 
     function closeMonitorModal() {
@@ -660,6 +732,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       const payload = {
         name: document.getElementById('mName').value.trim(),
         endpointUrl: document.getElementById('mUrl').value.trim(),
+        authHeader: document.getElementById('mAuthHeader') ? document.getElementById('mAuthHeader').value.trim() || undefined : undefined,
         checkIntervalSeconds: Number(document.getElementById('mInterval').value) || 1800,
         alertType: document.getElementById('mAlertType').value,
         alertWebhookUrl: document.getElementById('mAlertUrl').value.trim() || undefined,
