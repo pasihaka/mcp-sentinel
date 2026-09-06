@@ -483,8 +483,28 @@ export default {
         }
 
         const session = await getAuthenticatedUser(request, env);
-        const userId = session?.userId || 'anonymous-user';
-        const userTier = session?.tier || 'free';
+        const body: any = await request.json();
+
+        let userId = session?.userId;
+        let userTier: 'free' | 'pro' | 'team' = (session?.tier as any) || 'free';
+
+        // Support email-based monitor onboarding directly from landing page modal
+        if (!userId && body.email && typeof body.email === 'string') {
+          const email = body.email.trim().toLowerCase();
+          const existingUser: any = await env.DB.prepare('SELECT * FROM users WHERE email = ?').bind(email).first();
+          if (existingUser) {
+            userId = existingUser.id;
+            userTier = existingUser.tier || 'free';
+          } else {
+            userId = crypto.randomUUID();
+            const now = Date.now();
+            await env.DB.prepare(
+              `INSERT INTO users (id, email, tier, created_at, updated_at) VALUES (?, ?, 'free', ?, ?)`
+            ).bind(userId, email, now, now).run();
+          }
+        }
+
+        userId = userId || 'anonymous-user';
         const limits = TIER_LIMITS[userTier] || TIER_LIMITS.free;
 
         // Check monitor quota
@@ -506,7 +526,6 @@ export default {
           );
         }
 
-        const body: any = await request.json();
         if (!body.endpointUrl || !body.name) {
           return new Response(JSON.stringify({ error: 'Missing required "endpointUrl" or "name".' }), {
             status: 400,
@@ -514,7 +533,7 @@ export default {
           });
         }
 
-        const requestedInterval = Number(body.checkIntervalSeconds) || 60;
+        const requestedInterval = Number(body.checkIntervalSeconds) || 1800;
         const intervalSeconds = Math.max(requestedInterval, limits.minIntervalSeconds);
 
         const monitorId = crypto.randomUUID();
@@ -535,10 +554,13 @@ export default {
           )
           .run();
 
-        // If webhook alert destination was passed and user tier allows alerts
+        // If webhook alert destination was passed
+        let testAlertSent = false;
+        let alertNotice: string | undefined;
+
         if (body.alertWebhookUrl) {
-          if (!limits.hasAlerts && userTier === 'free') {
-            // Free tier gets notice
+          if (!limits.hasAlerts) {
+            alertNotice = 'Slack/Discord webhooks are available on Developer Pro ($19/mo). Upgrade to receive instant incident pings.';
           } else {
             const alertId = crypto.randomUUID();
             await env.DB.prepare(
@@ -547,6 +569,13 @@ export default {
             )
               .bind(alertId, monitorId, body.alertType || 'slack', body.alertWebhookUrl, now)
               .run();
+
+            // Dispatch immediate verification test alert to customer's Slack/Discord
+            testAlertSent = await WebhookDispatcher.sendTestAlert(
+              { type: body.alertType || 'slack', url: body.alertWebhookUrl },
+              body.name,
+              body.endpointUrl
+            );
           }
         }
 
@@ -554,7 +583,11 @@ export default {
           JSON.stringify({
             success: true,
             monitorId,
+            name: body.name,
+            endpointUrl: body.endpointUrl,
             intervalSeconds,
+            testAlertSent,
+            alertNotice,
             statusBadgeUrl: `${url.origin}/badge/${monitorId}/status.svg`,
             schemaBadgeUrl: `${url.origin}/badge/${monitorId}/schema.svg`,
           }),

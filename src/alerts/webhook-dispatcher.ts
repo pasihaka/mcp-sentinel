@@ -200,4 +200,44 @@ export class WebhookDispatcher {
       }),
     });
   }
+
+  /**
+   * Sends a test verification notification when an alert destination is configured
+   */
+  static async sendTestAlert(
+    destination: AlertDestination,
+    serverName: string,
+    endpointUrl: string
+  ): Promise<boolean> {
+    try {
+      let payload: any;
+      if (destination.type === 'slack') {
+        payload = {
+          text: `🔔 *MCP Sentinel:* Alerts successfully configured for *${serverName}* (\`${endpointUrl}\`). You will receive real-time notifications here if downtime or breaking schema drift is detected.`,
+        };
+      } else if (destination.type === 'discord') {
+        payload = {
+          content: `🔔 **MCP Sentinel:** Alerts successfully configured for **${serverName}** (\`${endpointUrl}\`). You will receive real-time notifications here if downtime or breaking schema drift is detected.`,
+        };
+      } else {
+        payload = {
+          event: 'test_alert',
+          serverName,
+          endpointUrl,
+          message: 'MCP Sentinel alerts successfully connected.',
+        };
+      }
+
+      const res = await fetch(destination.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(5000),
+      });
+
+      return res.ok;
+    } catch {
+      return false;
+    }
+  }
 }

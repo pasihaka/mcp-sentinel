@@ -243,6 +243,64 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       color: var(--muted);
       font-weight: 600;
     }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 1rem;
+    }
+    .modal-card {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 520px;
+      width: 100%;
+      padding: 1.75rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      line-height: 1;
+    }
+    .modal-close:hover {
+      color: #fff;
+      background: #1e293b;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #cbd5e1;
+    }
   </style>
 </head>
 <body>
@@ -256,7 +314,8 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         <a href="https://smithery.ai/servers/pasihakamaki/mcp-sentinel" target="_blank" rel="noopener" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Smithery 100/100 ↗</a>
         <a href="https://glama.ai/mcp/servers/pasihaka/mcp-sentinel" target="_blank" rel="noopener" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Glama Verified ↗</a>
         <a href="#pricing" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Pricing</a>
-        <a href="#comparison" style="color: var(--muted); text-decoration: none; font-size: 0.85rem;">Why MCP Sentinel?</a>
+        <a href="#comparison" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Why MCP Sentinel?</a>
+        <button type="button" onclick="openMonitorModal()" style="padding: 0.4rem 0.9rem; font-size: 0.8rem; background: var(--accent); border-radius: 6px; margin-left: 0.5rem;">+ Set Up Monitor</button>
       </div>
     </nav>
 
@@ -264,6 +323,9 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       <div style="display: inline-block; background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; color: #60a5fa; border-radius: 9999px; padding: 0.3rem 0.9rem; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem;">✨ Universal Protocol Ready: 2026-07-28 (Stateless Core), 2025-11-25, 2025-06-18 &amp; 2024-11-05</div>
       <h1>Synthetic Health & Schema Drift Sentinel for Remote MCP Servers</h1>
       <p>Traditional uptime monitors stop at HTTP 200. MCP Sentinel executes real JSON-RPC 2.0 protocol handshakes, detects breaking tool schema mutations, and prevents AI agents from crashing.</p>
+      <div style="margin-top: 1.25rem;">
+        <button type="button" onclick="openMonitorModal()" style="padding: 0.65rem 1.4rem; font-size: 0.9rem; background: var(--accent); border-radius: 8px;">⚡ Set Up 24/7 Autonomous Monitor (Free)</button>
+      </div>
     </section>
 
     <div class="tester-card">
@@ -311,7 +373,10 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.3rem;">Live Dynamic GitHub README Badge:</div>
             <div class="badge-code" id="badgeMarkdown">[![MCP Sentinel Status](https://mcp-sentinel.pasihakamaki.workers.dev/badge/demo/status.svg)](https://mcp-sentinel.pasihakamaki.workers.dev)</div>
           </div>
-          <button onclick="copyBadge()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Copy Markdown</button>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" onclick="copyBadge()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Copy Markdown</button>
+            <button type="button" onclick="openMonitorModal(document.getElementById('endpointInput').value)" style="padding: 0.5rem 1rem; font-size: 0.8rem; background: #10b981;">⚡ Monitor 24/7 with Alerts</button>
+          </div>
         </div>
       </div>
     </div>
@@ -376,7 +441,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <li>Dynamic GitHub status badge</li>
             <li>Email incident notification</li>
           </ul>
-          <button style="width: 100%; background: #1f2937;" onclick="document.getElementById('endpointInput').scrollIntoView({ behavior: 'smooth' }); document.getElementById('endpointInput').focus();">Start Free Monitoring</button>
+          <button type="button" style="width: 100%; background: #1f2937;" onclick="openMonitorModal()">Start Free Monitoring</button>
         </div>
 
         <div class="pricing-card featured">
@@ -419,6 +484,84 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       </div>
       <div>&copy; 2026 MCP Sentinel. Autonomous Synthetic Protocol Reliability for Remote AI Agents.</div>
     </footer>
+  </div>
+
+  <!-- Setup Alert Monitor Modal -->
+  <div id="monitorModal" class="modal-overlay" style="display: none;" onclick="if(event.target===this)closeMonitorModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <span style="font-size: 1.3rem;">🛡️</span>
+          <h3 style="margin: 0; font-size: 1.25rem;">Set Up 24/7 MCP Monitoring</h3>
+        </div>
+        <button type="button" class="modal-close" onclick="closeMonitorModal()">&times;</button>
+      </div>
+
+      <div id="modalFormView">
+        <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 1.2rem; line-height: 1.4;">
+          Autonomous synthetic testing over Streamable HTTP and SSE. Get alerted on Slack or Discord the instant your server drops or tool schemas drift.
+        </p>
+
+        <form id="monitorForm" onsubmit="submitMonitor(event)">
+          <div class="form-group">
+            <label>Server Name</label>
+            <input type="text" id="mName" placeholder="e.g. Production Knowledge MCP" required style="width: 100%;">
+          </div>
+
+          <div class="form-group">
+            <label>Remote MCP Endpoint URL</label>
+            <input type="url" id="mUrl" placeholder="https://api.mycompany.com/mcp" required style="width: 100%;">
+          </div>
+
+          <div class="form-group">
+            <label>Check Frequency</label>
+            <select id="mInterval" style="width: 100%; background: #0b1120; border: 1px solid var(--border); color: #fff; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem;">
+              <option value="1800">Every 30 minutes (Free)</option>
+              <option value="60">Every 60 seconds (Pro $19/mo)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Alert Destination (Slack or Discord Webhook)</label>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <select id="mAlertType" style="background: #0b1120; border: 1px solid var(--border); color: #fff; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem;">
+                <option value="slack">Slack</option>
+                <option value="discord">Discord</option>
+                <option value="webhook">Custom Webhook</option>
+              </select>
+              <input type="url" id="mAlertUrl" placeholder="https://hooks.slack.com/... or discord.com/api/webhooks/..." style="flex: 1;">
+            </div>
+            <div style="font-size: 0.75rem; color: var(--muted);">We'll dispatch an instant test notification upon saving to verify connectivity.</div>
+          </div>
+
+          <div class="form-group">
+            <label>Your Email</label>
+            <input type="email" id="mEmail" placeholder="developer@mycompany.com" required style="width: 100%;">
+            <div style="font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem;">Used to manage your monitors and receive incident summaries.</div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="submit" id="mSubmitBtn" style="flex: 1; background: var(--accent); padding: 0.85rem;">🚀 Start Monitoring</button>
+            <button type="button" onclick="closeMonitorModal()" style="background: #1f2937; padding: 0.85rem 1.2rem;">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="modalSuccessView" style="display: none; text-align: center; padding: 1rem 0;">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✅</div>
+        <h3 style="color: var(--green); margin-bottom: 0.5rem;">24/7 Monitor Activated!</h3>
+        <p id="mSuccessMsg" style="color: var(--muted); font-size: 0.9rem; margin-bottom: 1.5rem;"></p>
+
+        <div style="background: #0b1120; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: left; margin-bottom: 1rem;">
+          <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.5rem;">Your Live Dynamic GitHub Badge:</div>
+          <div style="margin-bottom: 0.75rem;" id="mBadgePreview"></div>
+          <div class="badge-code" id="mBadgeCode" style="font-size: 0.75rem; word-break: break-all; margin-bottom: 0.5rem;"></div>
+          <button type="button" onclick="copyMonitorBadge()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Copy Markdown</button>
+        </div>
+
+        <button type="button" onclick="closeMonitorModal()" style="background: #1f2937; width: 100%;">Done</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -484,6 +627,83 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
     function selectPreset(url) {
       document.getElementById('endpointInput').value = url;
       runAudit();
+    }
+
+    function openMonitorModal(prefillUrl) {
+      document.getElementById('monitorModal').style.display = 'flex';
+      document.getElementById('modalFormView').style.display = 'block';
+      document.getElementById('modalSuccessView').style.display = 'none';
+
+      const url = prefillUrl || document.getElementById('endpointInput').value || '';
+      if (url) {
+        document.getElementById('mUrl').value = url;
+        try {
+          const u = new URL(url);
+          const domain = u.hostname.replace('.workers.dev', '').replace('.global.api.aws', 'aws').replace('.com', '').replace('.dev', '');
+          document.getElementById('mName').value = domain.charAt(0).toUpperCase() + domain.slice(1) + ' MCP';
+        } catch {
+          document.getElementById('mName').value = 'Production MCP';
+        }
+      }
+    }
+
+    function closeMonitorModal() {
+      document.getElementById('monitorModal').style.display = 'none';
+    }
+
+    async function submitMonitor(e) {
+      e.preventDefault();
+      const btn = document.getElementById('mSubmitBtn');
+      btn.disabled = true;
+      btn.innerText = 'Activating Monitor...';
+
+      const payload = {
+        name: document.getElementById('mName').value.trim(),
+        endpointUrl: document.getElementById('mUrl').value.trim(),
+        checkIntervalSeconds: Number(document.getElementById('mInterval').value) || 1800,
+        alertType: document.getElementById('mAlertType').value,
+        alertWebhookUrl: document.getElementById('mAlertUrl').value.trim() || undefined,
+        email: document.getElementById('mEmail').value.trim(),
+      };
+
+      try {
+        const res = await fetch('/api/monitors', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to create monitor');
+        }
+
+        document.getElementById('modalFormView').style.display = 'none';
+        document.getElementById('modalSuccessView').style.display = 'block';
+
+        let intervalText = data.intervalSeconds >= 60 ? (data.intervalSeconds/60) + ' min' : data.intervalSeconds + 's';
+        let msg = 'Synthetic check scheduled every ' + intervalText + '.';
+        if (data.testAlertSent) {
+          msg += ' A test notification was successfully dispatched to your webhook!';
+        } else if (data.alertNotice) {
+          msg += ' Note: ' + data.alertNotice;
+        }
+        document.getElementById('mSuccessMsg').innerText = msg;
+
+        const badgeMd = '[![MCP Sentinel Status](' + data.statusBadgeUrl + ')](' + window.location.origin + ')';
+        document.getElementById('mBadgeCode').innerText = badgeMd;
+        document.getElementById('mBadgePreview').innerHTML = '<img src="' + data.statusBadgeUrl + '" alt="status badge">';
+      } catch (err) {
+        alert('Error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '🚀 Start Monitoring';
+      }
+    }
+
+    function copyMonitorBadge() {
+      const code = document.getElementById('mBadgeCode').innerText;
+      navigator.clipboard.writeText(code);
+      alert('Copied badge Markdown to clipboard!');
     }
   </script>
 </body>
