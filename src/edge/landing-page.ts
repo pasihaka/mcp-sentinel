@@ -744,15 +744,15 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.85rem;">
               <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 6px; padding: 0.85rem;">
                 <div style="font-size: 0.72rem; font-weight: 700; color: #f87171; text-transform: uppercase; margin-bottom: 0.35rem;">1. Silent Schema Mutation</div>
-                <div style="font-size: 0.8rem; color: #f1f5f9; font-family: monospace; background: #050b14; padding: 0.5rem; border-radius: 4px; line-height: 1.4;">
+                <div id="driftSimDiffCode" style="font-size: 0.8rem; color: #f1f5f9; font-family: monospace; background: #050b14; padding: 0.5rem; border-radius: 4px; line-height: 1.4;">
                   <span style="color: #ef4444;">- param "query": string (required)</span><br>
                   <span style="color: #10b981;">+ param "search_term": string (required)</span>
                 </div>
-                <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 0.35rem;">A developer pushed a commit renaming a parameter without updating prompt instructions.</div>
+                <div id="driftSimDesc" style="font-size: 0.74rem; color: #94a3b8; margin-top: 0.35rem;">A developer pushed a commit renaming a parameter without updating prompt instructions.</div>
               </div>
               <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 6px; padding: 0.85rem;">
                 <div style="font-size: 0.72rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; margin-bottom: 0.35rem;">2. Production Agent Crash</div>
-                <div style="font-size: 0.8rem; color: #fde68a; line-height: 1.45;">
+                <div id="driftSimAgentImpact" style="font-size: 0.8rem; color: #fde68a; line-height: 1.45;">
                   💥 <strong>Agent Failure:</strong> Claude Desktop or Cursor calls tool with old param <code style="color: #fff;">{"query":"..."}</code>, server throws <code style="color: #ef4444;">-32602 Invalid Params</code>, and the AI hallucination loop begins.
                 </div>
               </div>
@@ -763,7 +763,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
                 <div style="font-size: 0.75rem; font-weight: 700; color: #60a5fa; text-transform: uppercase;">3. Real-Time Slack / Discord Alert Dispatched</div>
                 <span style="font-size: 0.72rem; color: #10b981; font-weight: 600;">Dispatched in &lt;60s · Autonomous Interception</span>
               </div>
-              <div style="background: #090d16; border-left: 3px solid #ef4444; padding: 0.6rem 0.8rem; border-radius: 4px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.8rem; color: #e2e8f0; line-height: 1.4;">
+              <div id="driftSimSlackCard" style="background: #090d16; border-left: 3px solid #ef4444; padding: 0.6rem 0.8rem; border-radius: 4px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.8rem; color: #e2e8f0; line-height: 1.4;">
                 <div style="font-weight: 700; color: #ef4444; margin-bottom: 0.2rem;">🚨 MCP Sentinel Alert: Breaking Schema Drift Detected</div>
                 <div><strong>Server:</strong> Production MCP (<code style="color: #93c5fd;">/mcp</code>)</div>
                 <div><strong>Drift:</strong> Tool <code style="color: #f59e0b;">search_knowledge_base</code> removed required param <code style="color: #f87171;">query</code>.</div>
@@ -1293,6 +1293,70 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         btn.style.color = '#cbd5e1';
         btn.style.borderColor = 'var(--border)';
 
+        // 1. Dynamically inspect the audited server and tools
+        const auditData = window._lastAuditData || {};
+        const tools = auditData.tools || [];
+        const endpointInput = document.getElementById('endpointInput').value.trim();
+
+        let serverHost = 'Production MCP';
+        let endpointPath = '/mcp';
+        try {
+          const u = new URL(endpointInput);
+          serverHost = u.hostname.replace('.workers.dev', '').replace('.global.api.aws', 'aws').replace('.com', '');
+          serverHost = serverHost.charAt(0).toUpperCase() + serverHost.slice(1) + ' MCP';
+          endpointPath = u.pathname || '/mcp';
+        } catch {}
+
+        // Find a tool with properties, or fallback to first tool, or default
+        let targetTool = null;
+        let targetParam = 'query';
+        let targetParamType = 'string';
+        let isParamRequired = true;
+
+        for (let i = 0; i < tools.length; i++) {
+          const t = tools[i];
+          if (t.inputSchema && t.inputSchema.properties && Object.keys(t.inputSchema.properties).length > 0) {
+            targetTool = t;
+            const propKeys = Object.keys(t.inputSchema.properties);
+            targetParam = propKeys[0];
+            const pObj = t.inputSchema.properties[targetParam] || {};
+            targetParamType = pObj.type || 'string';
+            isParamRequired = Array.isArray(t.inputSchema.required) ? t.inputSchema.required.includes(targetParam) : true;
+            break;
+          }
+        }
+
+        const toolName = targetTool ? targetTool.name : (tools.length > 0 ? tools[0].name : 'search_knowledge_base');
+        const renamedParam = targetParam.endsWith('_id') 
+          ? targetParam.replace(/_id$/, '_uuid') 
+          : (targetParam === 'query' ? 'search_term' : targetParam + '_v2');
+
+        const reqLabel = isParamRequired ? ' (required)' : '';
+
+        // 2. Populate dynamic elements
+        const simDiffCode = document.getElementById('driftSimDiffCode');
+        if (simDiffCode) {
+          simDiffCode.innerHTML = '<span style="color: #ef4444;">- param "' + escapeHtml(targetParam) + '": ' + escapeHtml(targetParamType) + reqLabel + '</span><br><span style="color: #10b981;">+ param "' + escapeHtml(renamedParam) + '": ' + escapeHtml(targetParamType) + reqLabel + '</span>';
+        }
+
+        const simDesc = document.getElementById('driftSimDesc');
+        if (simDesc) {
+          simDesc.innerText = 'A developer pushed a commit renaming parameter "' + targetParam + '" to "' + renamedParam + '" in tool "' + toolName + '" without updating prompt instructions.';
+        }
+
+        const simImpact = document.getElementById('driftSimAgentImpact');
+        if (simImpact) {
+          simImpact.innerHTML = '💥 <strong>Agent Failure:</strong> Claude Desktop or Cursor calls tool <code>' + escapeHtml(toolName) + '</code> with old argument <code>{"' + escapeHtml(targetParam) + '": ...}</code>, server throws <code style="color: #ef4444;">-32602 Invalid Params</code>, and the AI agent enters a broken retry loop.';
+        }
+
+        const simSlackCard = document.getElementById('driftSimSlackCard');
+        if (simSlackCard) {
+          simSlackCard.innerHTML = '<div style="font-weight: 700; color: #ef4444; margin-bottom: 0.2rem;">🚨 MCP Sentinel Alert: Breaking Schema Drift Detected</div>'
+            + '<div><strong>Server:</strong> ' + escapeHtml(serverHost) + ' (<code style="color: #93c5fd;">' + escapeHtml(endpointPath) + '</code>)</div>'
+            + '<div><strong>Drift:</strong> Tool <code style="color: #f59e0b;">' + escapeHtml(toolName) + '</code> removed parameter <code style="color: #f87171;">' + escapeHtml(targetParam) + '</code>.</div>'
+            + '<div style="margin-top: 0.3rem; font-size: 0.74rem; color: #94a3b8;">Autonomous edge check caught breaking change before agent execution in production.</div>';
+        }
+
         verdict.innerText = 'SCHEMA DRIFT';
         verdict.style.color = '#ef4444';
 
@@ -1300,7 +1364,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         alertBox.style.background = 'rgba(239, 68, 68, 0.15)';
         alertBox.style.border = '1px solid #ef4444';
         alertBox.style.color = '#fca5a5';
-        alertBox.innerHTML = '🚨 <strong>Breaking Schema Drift Simulated:</strong> Required parameter <code>query</code> renamed to <code>search_term</code>. Any Claude/Cursor agent relying on this tool will immediately fail with <code>-32602 Invalid Params</code>.';
+        alertBox.innerHTML = '🚨 <strong>Breaking Schema Drift Simulated:</strong> Required parameter <code>' + escapeHtml(targetParam) + '</code> renamed to <code>' + escapeHtml(renamedParam) + '</code> in tool <code>' + escapeHtml(toolName) + '</code>. Autonomous agents will fail immediately with <code>-32602 Invalid Params</code>.';
 
         // Expand diagnostic frame to show drift error
         const diagContent = document.getElementById('diagnosticContent');
@@ -1323,8 +1387,8 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         if (stepVal) stepVal.className = 'diag-step step-fail';
         if (remBox && remText) {
           remBox.style.display = 'block';
-          remTitle.innerText = '⚠️ Breaking Schema Drift: Breaking Parameter Rename';
-          remText.innerHTML = '<strong>Root Cause:</strong> Tool <code>search_knowledge_base</code> dropped required property <code>query</code>.<br><strong>Remediation:</strong> Maintain <code>query</code> as an optional alias for at least 30 days or bump the major tool version so agents update their function signatures.';
+          remTitle.innerText = '⚠️ Breaking Schema Drift: Breaking Parameter Rename in ' + toolName;
+          remText.innerHTML = '<strong>Root Cause:</strong> Tool <code>' + escapeHtml(toolName) + '</code> removed property <code>' + escapeHtml(targetParam) + '</code>.<br><strong>Remediation:</strong> Maintain <code>' + escapeHtml(targetParam) + '</code> as an optional backwards-compatible alias or version the MCP endpoint.';
         }
       } else {
         window._isSimulatingDrift = false;
