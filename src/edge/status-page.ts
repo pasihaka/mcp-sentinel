@@ -324,6 +324,7 @@ export function renderStatusPage(
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 0.75rem;
       padding: 1.5rem 0;
       border-bottom: 1px solid var(--border);
       margin-bottom: 2.5rem;
@@ -331,12 +332,14 @@ export function renderStatusPage(
     .logo {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.45rem;
       font-weight: 800;
       font-size: 1.15rem;
       letter-spacing: -0.02em;
       color: #fff;
       text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .logo-badge {
       background: var(--accent);
@@ -345,6 +348,7 @@ export function renderStatusPage(
       padding: 0.15rem 0.45rem;
       border-radius: 4px;
       font-weight: 600;
+      flex-shrink: 0;
     }
     .nav-cta {
       background: rgba(59, 130, 246, 0.15);
@@ -356,11 +360,15 @@ export function renderStatusPage(
       border-radius: 6px;
       text-decoration: none;
       transition: all 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .nav-cta:hover {
       background: var(--accent);
       color: #fff;
     }
+    .desktop-only { display: inline; }
+    .mobile-only { display: none; }
 
     /* Hero Header */
     .header-section {
@@ -706,8 +714,27 @@ export function renderStatusPage(
 
     /* Mobile Responsiveness Overhaul */
     @media (max-width: 640px) {
+      .desktop-only { display: none !important; }
+      .mobile-only { display: inline !important; }
       body {
         padding: 0 0.85rem 4rem;
+      }
+      nav {
+        padding: 1rem 0;
+        margin-bottom: 1.5rem;
+        gap: 0.5rem;
+      }
+      .logo {
+        font-size: 0.95rem;
+        gap: 0.35rem;
+      }
+      .logo-badge {
+        font-size: 0.65rem;
+        padding: 0.1rem 0.35rem;
+      }
+      .nav-cta {
+        font-size: 0.78rem;
+        padding: 0.35rem 0.65rem;
       }
       .server-title {
         font-size: 1.4rem;
@@ -776,13 +803,16 @@ export function renderStatusPage(
   <div class="container">
     <nav>
       <a href="${originUrl}" class="logo">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent); flex-shrink: 0;">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        MCP Sentinel
+        <span style="white-space: nowrap;">MCP Sentinel</span>
         <span class="logo-badge">STATUS</span>
       </a>
-      <a href="${originUrl}/#tester" class="nav-cta">Monitor Your Server ➔</a>
+      <a href="${originUrl}/#tester" class="nav-cta">
+        <span class="desktop-only">Monitor Your Server ➔</span>
+        <span class="mobile-only">+ Monitor</span>
+      </a>
     </nav>
 
     <div class="header-section">
