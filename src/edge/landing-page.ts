@@ -413,6 +413,162 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       border-radius: 8px;
       text-align: left;
     }
+    .telemetry-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.3rem;
+      flex-wrap: wrap;
+    }
+    .pulse-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      flex-shrink: 0;
+    }
+    .telemetry-domain {
+      color: #f8fafc;
+      font-size: 1.05rem;
+      word-break: break-all;
+    }
+    .telemetry-tag {
+      background: #1e293b;
+      color: #94a3b8;
+      font-size: 0.72rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-family: monospace;
+      white-space: nowrap;
+    }
+
+    /* Mobile Responsiveness Overhaul */
+    @media (max-width: 640px) {
+      body {
+        padding: 0 0.85rem 3rem;
+      }
+      nav {
+        padding: 1rem 0;
+        margin-bottom: 1.5rem;
+      }
+      .nav-links-desktop {
+        display: none !important;
+      }
+      .hero h1 {
+        font-size: 1.85rem;
+        line-height: 1.25;
+        margin-bottom: 0.85rem;
+      }
+      .hero p {
+        font-size: 0.95rem;
+        margin-bottom: 1.5rem;
+      }
+      .ecosystem-trust-bar {
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        margin: 1rem auto 1.75rem;
+        flex-direction: column;
+        gap: 0.6rem;
+        text-align: center;
+      }
+      .trust-badges {
+        justify-content: center;
+        gap: 0.6rem 0.85rem;
+      }
+      .tester-card {
+        padding: 1.25rem 0.85rem;
+        margin-bottom: 2.5rem;
+      }
+      .input-group {
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .input-group input[type="text"] {
+        width: 100%;
+        padding: 0.75rem 0.85rem;
+        font-size: 0.85rem;
+        box-sizing: border-box;
+      }
+      .input-group button {
+        width: 100%;
+        padding: 0.85rem;
+      }
+      .grid-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+      .stat-box {
+        padding: 0.75rem 0.6rem;
+      }
+      .stat-value {
+        font-size: 1.1rem;
+      }
+      .badge-preview {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+        padding: 1rem 0.85rem;
+      }
+      .badge-preview > div:last-child {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 0.5rem;
+      }
+      .badge-preview button {
+        width: 100%;
+      }
+      .diag-pipeline {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+      }
+      #diagnosticHeader {
+        padding: 0.75rem 0.85rem;
+      }
+      #diagnosticContent {
+        padding: 1rem 0.85rem;
+      }
+      .telemetry-card {
+        padding: 1.25rem 0.85rem;
+      }
+      .telemetry-domain {
+        font-size: 0.95rem;
+      }
+      .telemetry-stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+      }
+      .telemetry-card > div:last-child {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+      .telemetry-card > div:last-child > div:last-child {
+        flex-direction: column;
+        width: 100%;
+      }
+      .telemetry-card > div:last-child button,
+      .telemetry-card > div:last-child a {
+        width: 100%;
+        text-align: center;
+      }
+      .comparison-table {
+        min-width: 600px;
+      }
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+      .pricing-card {
+        padding: 1.5rem 1rem;
+      }
+      .modal-card {
+        padding: 1.25rem 1rem;
+        max-height: 95vh;
+      }
+    }
   </style>
 </head>
 <body>
@@ -423,10 +579,10 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         <span class="logo-badge">EDGE</span>
       </div>
       <div>
-        <a href="https://smithery.ai/servers/pasihakamaki/mcp-sentinel" target="_blank" rel="noopener" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Smithery 100/100 ↗</a>
-        <a href="https://glama.ai/mcp/servers/pasihaka/mcp-sentinel" target="_blank" rel="noopener" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Glama Verified ↗</a>
-        <a href="#pricing" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Pricing</a>
-        <a href="#comparison" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Why MCP Sentinel?</a>
+        <a href="https://smithery.ai/servers/pasihakamaki/mcp-sentinel" target="_blank" rel="noopener" class="nav-links-desktop" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Smithery 100/100 ↗</a>
+        <a href="https://glama.ai/mcp/servers/pasihaka/mcp-sentinel" target="_blank" rel="noopener" class="nav-links-desktop" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Glama Verified ↗</a>
+        <a href="#pricing" class="nav-links-desktop" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Pricing</a>
+        <a href="#comparison" class="nav-links-desktop" style="color: var(--muted); text-decoration: none; font-size: 0.85rem; margin-right: 1.2rem;">Why MCP Sentinel?</a>
         <button type="button" onclick="openMonitorModal()" style="padding: 0.4rem 0.9rem; font-size: 0.8rem; background: var(--accent); border-radius: 6px; margin-left: 0.5rem;">+ Set Up Monitor</button>
       </div>
     </nav>
@@ -580,47 +736,49 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
 
     <section id="comparison">
       <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; text-align: center;">Why Generic APMs Miss 80% of MCP Failures</h2>
-      <table class="comparison-table">
-        <thead>
-          <tr>
-            <th>Feature / Inspection Layer</th>
-            <th>Generic HTTP Ping (Pingdom / Better Stack)</th>
-            <th>MCP Sentinel</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><strong>Protocol Awareness</strong></td>
-            <td>HTTP status code only (200 OK)</td>
-            <td>Full JSON-RPC 2.0 Handshake & Protocol Negotiation</td>
-          </tr>
-          <tr>
-            <td><strong>Universal Protocol Support</strong></td>
-            <td>❌ Legacy or custom only</td>
-            <td>✅ Modern 2026-07-28 Stateless Core, 2025-11-25 Icons, 2025-06-18 Typed Output &amp; 2024-11-05 Handshake</td>
-          </tr>
-          <tr>
-            <td><strong>SSE Event Handshake</strong></td>
-            <td>❌ Dropped after GET</td>
-            <td>✅ Subscribes to stream & extracts dynamic endpoint URLs</td>
-          </tr>
-          <tr>
-            <td><strong>Tool Schema Validation</strong></td>
-            <td>❌ None</td>
-            <td>✅ Ajv JSON Schema draft-07/2020-12 compliance</td>
-          </tr>
-          <tr>
-            <td><strong>Breaking Schema Drift</strong></td>
-            <td>❌ Blind to deleted parameters</td>
-            <td>✅ Instant AST diff alerts when tools mutate</td>
-          </tr>
-          <tr>
-            <td><strong>Secret & API Token Scan</strong></td>
-            <td>❌ None</td>
-            <td>✅ Continuous entropy audit for leaked OpenAI/AWS keys</td>
-          </tr>
-        </tbody>
-      </table>
+      <div style="overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 2rem 0; border-radius: 12px; border: 1px solid var(--border);">
+        <table class="comparison-table" style="margin: 0; border: none; min-width: 600px;">
+          <thead>
+            <tr>
+              <th>Feature / Inspection Layer</th>
+              <th>Generic HTTP Ping (Pingdom / Better Stack)</th>
+              <th>MCP Sentinel</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Protocol Awareness</strong></td>
+              <td>HTTP status code only (200 OK)</td>
+              <td>Full JSON-RPC 2.0 Handshake & Protocol Negotiation</td>
+            </tr>
+            <tr>
+              <td><strong>Universal Protocol Support</strong></td>
+              <td>❌ Legacy or custom only</td>
+              <td>✅ Modern 2026-07-28 Stateless Core, 2025-11-25 Icons, 2025-06-18 Typed Output &amp; 2024-11-05 Handshake</td>
+            </tr>
+            <tr>
+              <td><strong>SSE Event Handshake</strong></td>
+              <td>❌ Dropped after GET</td>
+              <td>✅ Subscribes to stream & extracts dynamic endpoint URLs</td>
+            </tr>
+            <tr>
+              <td><strong>Tool Schema Validation</strong></td>
+              <td>❌ None</td>
+              <td>✅ Ajv JSON Schema draft-07/2020-12 compliance</td>
+            </tr>
+            <tr>
+              <td><strong>Breaking Schema Drift</strong></td>
+              <td>❌ Blind to deleted parameters</td>
+              <td>✅ Instant AST diff alerts when tools mutate</td>
+            </tr>
+            <tr>
+              <td><strong>Secret & API Token Scan</strong></td>
+              <td>❌ None</td>
+              <td>✅ Continuous entropy audit for leaked OpenAI/AWS keys</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <section id="telemetry-preview" style="margin: 4rem 0 3rem 0;">
@@ -633,12 +791,12 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       <div class="telemetry-card">
         <div class="telemetry-header">
           <div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
-              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
-              <strong style="color: #f8fafc; font-size: 1.05rem;">weather-mcp.production.internal/sse</strong>
-              <span style="background: #1e293b; color: #94a3b8; font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-family: monospace;">SSE Transport</span>
+            <div class="telemetry-title-row">
+              <span class="pulse-indicator"></span>
+              <strong class="telemetry-domain">weather-mcp.production.internal/sse</strong>
+              <span class="telemetry-tag">SSE Transport</span>
             </div>
-            <div style="font-size: 0.8rem; color: var(--muted);">Monitored every 60 seconds from 3 global edge regions (US-East, EU-Central, AP-South)</div>
+            <div style="font-size: 0.8rem; color: var(--muted); word-break: break-word;">Monitored every 60 seconds from 3 global edge regions (US-East, EU-Central, AP-South)</div>
           </div>
           <div style="display: flex; gap: 0.5rem; align-items: center;">
             <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 6px;">99.98% UPTIME</span>

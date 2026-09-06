@@ -494,17 +494,25 @@ export function renderStatusPage(
       font-weight: 700;
       color: #fff;
     }
+    .bars-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+      margin-bottom: 0.5rem;
+    }
     .bars-container {
       display: flex;
-      gap: 4px;
+      gap: 3px;
       height: 36px;
       align-items: stretch;
-      margin-bottom: 0.75rem;
+      min-width: 100%;
+      width: 100%;
     }
     .bar {
-      flex: 1;
-      min-width: 4px;
-      border-radius: 3px;
+      flex: 1 1 0px;
+      min-width: 2px;
+      border-radius: 2px;
       transition: opacity 0.2s, transform 0.15s;
       cursor: pointer;
     }
@@ -695,6 +703,73 @@ export function renderStatusPage(
     footer a:hover {
       color: #fff;
     }
+
+    /* Mobile Responsiveness Overhaul */
+    @media (max-width: 640px) {
+      body {
+        padding: 0 0.85rem 4rem;
+      }
+      .server-title {
+        font-size: 1.4rem;
+        word-break: break-word;
+      }
+      .endpoint-meta {
+        font-size: 0.8rem;
+        gap: 0.4rem;
+      }
+      .endpoint-code {
+        word-break: break-all;
+        display: inline-block;
+        max-width: 100%;
+      }
+      .status-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding: 1rem;
+      }
+      .status-right {
+        text-align: left;
+      }
+      .kpi-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem;
+      }
+      .kpi-card {
+        padding: 0.85rem;
+      }
+      .kpi-value {
+        font-size: 1.2rem;
+      }
+      .section-card {
+        padding: 1rem 0.85rem;
+      }
+      .bars-container {
+        gap: 2px;
+        height: 28px;
+        min-width: 260px;
+      }
+      .badge-card {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 1rem;
+        gap: 0.85rem;
+      }
+      .badge-left {
+        min-width: 0;
+      }
+      .btn-copy {
+        width: 100%;
+      }
+      .viral-card {
+        padding: 1.5rem 1rem;
+      }
+      .viral-btn {
+        width: 100%;
+        display: block;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -770,8 +845,10 @@ export function renderStatusPage(
         <div class="section-title">Uptime & Latency History</div>
         <div style="font-size: 0.85rem; color: var(--muted);">Synthetic probe executed every ${monitor.check_interval_seconds || 60} seconds</div>
       </div>
-      <div class="bars-container">
-        ${barsHtml}
+      <div class="bars-wrapper">
+        <div class="bars-container">
+          ${barsHtml}
+        </div>
       </div>
       <div class="bars-footer">
         <span>60 checks ago</span>
