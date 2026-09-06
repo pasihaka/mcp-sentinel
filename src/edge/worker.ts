@@ -182,6 +182,8 @@ export default {
               status: 'operational',
               httpStatus: 200,
               latencyMs: 18,
+              initLatencyMs: 11,
+              toolsLatencyMs: 7,
               protocolVersion: '2024-11-05',
               serverInfo: { name: 'mcp-sentinel', version: '1.0.0' },
               capabilities: { tools: {} },

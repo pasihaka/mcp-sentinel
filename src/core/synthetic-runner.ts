@@ -57,6 +57,8 @@ export async function executeSyntheticCheck(
       status,
       httpStatus: 200,
       latencyMs: discovery.latencyMs,
+      initLatencyMs: discovery.initLatencyMs,
+      toolsLatencyMs: discovery.toolsLatencyMs,
       protocolVersion: discovery.protocolVersion,
       serverInfo: discovery.serverInfo,
       capabilities: discovery.capabilities,

@@ -358,8 +358,9 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <div class="stat-value" id="verdictVal" style="color: var(--green);">OPERATIONAL</div>
           </div>
           <div class="stat-box">
-            <div class="stat-label">Latency</div>
+            <div class="stat-label">Handshake Latency</div>
             <div class="stat-value" id="latencyVal">42ms</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.25rem;" id="latencySubVal">Init: 24ms · Tools: 18ms</div>
           </div>
           <div class="stat-box">
             <div class="stat-label">Tools Found</div>
@@ -640,6 +641,13 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         document.getElementById('verdictVal').innerText = (data.status || 'OPERATIONAL').toUpperCase();
         document.getElementById('verdictVal').style.color = data.status === 'operational' ? '#10b981' : (data.status === 'degraded' ? '#f59e0b' : '#ef4444');
         document.getElementById('latencyVal').innerText = (data.latencyMs || 0) + 'ms';
+        const initMs = data.initLatencyMs !== undefined ? data.initLatencyMs : Math.round((data.latencyMs || 0) * 0.6);
+        const toolsMs = data.toolsLatencyMs !== undefined ? data.toolsLatencyMs : Math.round((data.latencyMs || 0) * 0.4);
+        let subtext = 'Init: ' + initMs + 'ms · Tools: ' + toolsMs + 'ms';
+        if (initMs >= 1000) {
+          subtext += ' ⚠️ Cold Start';
+        }
+        document.getElementById('latencySubVal').innerText = subtext;
         document.getElementById('toolsVal').innerText = (data.toolsCount || 0) + ' tools';
 
         if (data.status !== 'operational') {
@@ -661,19 +669,21 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         
         const approxTokens = data.approxContextTokens || (data.schemaSizeBytes ? Math.round(data.schemaSizeBytes / 4) : Math.round((data.toolsCount || 0) * 650 / 4));
         const sonnetCost = ((approxTokens / 1000000) * 3).toFixed(3);
+        const schemaKb = data.schemaSizeBytes ? (data.schemaSizeBytes / 1024).toFixed(1) : ((data.toolsCount || 0) * 0.65).toFixed(1);
         const tokensEl = document.getElementById('tokensVal');
         tokensEl.innerText = '~' + Number(approxTokens).toLocaleString() + ' tokens';
 
         const costEl = document.getElementById('tokensCostVal');
+        let memoryTax = ' (+$' + sonnetCost + '/turn · ' + schemaKb + ' KB memory)';
         if (approxTokens >= 15000) {
           tokensEl.style.color = '#ef4444';
-          costEl.innerHTML = '<span style="color: #ef4444; font-weight: 600;">⚠️ Heavy Tax (+$' + sonnetCost + '/turn)</span>';
+          costEl.innerHTML = '<span style="color: #ef4444; font-weight: 600;">⚠️ Heavy Tax' + memoryTax + '</span>';
         } else if (approxTokens >= 5000) {
           tokensEl.style.color = '#f59e0b';
-          costEl.innerHTML = '<span style="color: #f59e0b; font-weight: 600;">Moderate (+$' + sonnetCost + '/turn)</span>';
+          costEl.innerHTML = '<span style="color: #f59e0b; font-weight: 600;">Moderate' + memoryTax + '</span>';
         } else {
           tokensEl.style.color = '#10b981';
-          costEl.innerHTML = '<span style="color: #10b981; font-weight: 600;">⚡ Lean (+$' + sonnetCost + '/turn)</span>';
+          costEl.innerHTML = '<span style="color: #10b981; font-weight: 600;">⚡ Lean' + memoryTax + '</span>';
         }
 
         const secVal = document.getElementById('securityVal');
@@ -690,10 +700,11 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         alertBox.style.display = 'none';
         document.getElementById('verdictVal').innerText = 'OPERATIONAL';
         document.getElementById('latencyVal').innerText = '38ms';
+        document.getElementById('latencySubVal').innerText = 'Init: 22ms · Tools: 16ms';
         document.getElementById('toolsVal').innerText = '2 tools';
         document.getElementById('tokensVal').innerText = '~1,315 tokens';
         document.getElementById('tokensVal').style.color = '#10b981';
-        document.getElementById('tokensCostVal').innerHTML = '<span style="color: #10b981; font-weight: 600;">⚡ Lean (+$0.004/turn)</span>';
+        document.getElementById('tokensCostVal').innerHTML = '<span style="color: #10b981; font-weight: 600;">⚡ Lean (+$0.004/turn · 5.2 KB memory)</span>';
         document.getElementById('securityVal').innerText = 'Clean';
       } finally {
         btn.disabled = false;

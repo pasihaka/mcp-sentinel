@@ -18,6 +18,8 @@ export interface MCPClientOptions {
 
 export interface MCPDiscoveryResult {
   latencyMs: number;
+  initLatencyMs?: number;
+  toolsLatencyMs?: number;
   protocolVersion: string;
   serverInfo: { name: string; version: string };
   capabilities: any;
@@ -57,13 +59,17 @@ export class RemoteMCPClient {
 
     try {
       // 2. Send initialize handshake
+      const initStart = performance.now();
       const initResult = await this.sendInitialize(postUrl, sseReader);
+      const initLatencyMs = Math.round(performance.now() - initStart);
 
       // 3. Send notifications/initialized
       await this.sendNotification(postUrl, 'notifications/initialized');
 
       // 4. Fetch tools/list
+      const toolsStart = performance.now();
       const tools = await this.fetchTools(postUrl, sseReader);
+      const toolsLatencyMs = Math.round(performance.now() - toolsStart);
 
       // 5. Fetch resources/list (graceful fallback if unsupported)
       let resources: MCPResource[] = [];
@@ -85,6 +91,8 @@ export class RemoteMCPClient {
 
       return {
         latencyMs: totalLatency,
+        initLatencyMs,
+        toolsLatencyMs,
         protocolVersion: initResult.protocolVersion || this.protocolVersion,
         serverInfo: initResult.serverInfo || { name: 'Unknown', version: '0.0.0' },
         capabilities: initResult.capabilities || {},

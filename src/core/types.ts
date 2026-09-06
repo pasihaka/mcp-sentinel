@@ -166,6 +166,8 @@ export interface CheckExecutionResult {
   status: CheckStatus;
   httpStatus?: number;
   latencyMs: number;
+  initLatencyMs?: number;
+  toolsLatencyMs?: number;
   protocolVersion?: string;
   serverInfo?: ImplementationInfo;
   capabilities?: ServerCapabilities;
