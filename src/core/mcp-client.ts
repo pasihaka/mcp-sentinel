@@ -60,7 +60,13 @@ export class RemoteMCPClient {
     try {
       // 2. Send initialize handshake
       const initStart = performance.now();
-      const initResult = await this.sendInitialize(postUrl, sseReader);
+      let initResult: InitializeResult;
+      try {
+        initResult = await this.sendInitialize(postUrl, sseReader);
+      } catch (err: any) {
+        if (!err.phase) err.phase = 'initialize';
+        throw err;
+      }
       const initLatencyMs = Math.round(performance.now() - initStart);
 
       // 3. Send notifications/initialized
@@ -68,7 +74,13 @@ export class RemoteMCPClient {
 
       // 4. Fetch tools/list
       const toolsStart = performance.now();
-      const tools = await this.fetchTools(postUrl, sseReader);
+      let tools: MCPTool[] = [];
+      try {
+        tools = await this.fetchTools(postUrl, sseReader);
+      } catch (err: any) {
+        if (!err.phase) err.phase = 'tools';
+        throw err;
+      }
       const toolsLatencyMs = Math.round(performance.now() - toolsStart);
 
       // 5. Fetch resources/list (graceful fallback if unsupported)
@@ -200,7 +212,9 @@ export class RemoteMCPClient {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+        const err: any = new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+        err.httpStatus = response.status;
+        throw err;
       }
 
       const rawText = await response.text();
@@ -214,12 +228,16 @@ export class RemoteMCPClient {
         if (dataMatch && dataMatch[1]) {
           body = JSON.parse(dataMatch[1]);
         } else {
-          throw new Error(`Failed to parse JSON-RPC response: ${rawText.slice(0, 120)}`);
+          const err: any = new Error(`Failed to parse JSON-RPC response: ${rawText.slice(0, 120)}`);
+          err.rpcErrorCode = -32700; // Parse error
+          throw err;
         }
       }
 
       if (body.error) {
-        throw new Error(`JSON-RPC Error [${body.error.code}]: ${body.error.message}`);
+        const err: any = new Error(`JSON-RPC Error [${body.error.code}]: ${body.error.message}`);
+        err.rpcErrorCode = body.error.code;
+        throw err;
       }
 
       if (body.result === undefined) {

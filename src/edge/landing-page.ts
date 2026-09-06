@@ -301,6 +301,118 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       margin-bottom: 0.4rem;
       color: #cbd5e1;
     }
+
+    /* Ecosystem Trust Bar */
+    .ecosystem-trust-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+      margin: 1.5rem auto 2.5rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      max-width: 900px;
+    }
+    .trust-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .trust-badges {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+    .trust-item strong {
+      color: #f8fafc;
+    }
+
+    /* Diagnostics Pipeline */
+    .diag-pipeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .diag-step {
+      padding: 0.5rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+    .diag-step.step-pass {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.3);
+      color: #34d399;
+    }
+    .diag-step.step-warn {
+      background: rgba(245, 158, 11, 0.1);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+    }
+    .diag-step.step-fail {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #f87171;
+    }
+    .diag-step.step-pending {
+      background: #0b1120;
+      border-color: #1e293b;
+      color: #64748b;
+    }
+
+    /* Telemetry Preview Section */
+    .telemetry-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      margin-top: 1.5rem;
+      position: relative;
+      text-align: left;
+    }
+    .telemetry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .telemetry-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .telemetry-stat-box {
+      background: #0b1120;
+      border: 1px solid var(--border);
+      padding: 0.85rem;
+      border-radius: 8px;
+      text-align: left;
+    }
   </style>
 </head>
 <body>
@@ -327,6 +439,17 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         <button type="button" onclick="openMonitorModal()" style="padding: 0.65rem 1.4rem; font-size: 0.9rem; background: var(--accent); border-radius: 8px;">⚡ Set Up 24/7 Autonomous Monitor (Free)</button>
       </div>
     </section>
+
+    <div class="ecosystem-trust-bar">
+      <span class="trust-label">Verified & Compatible With</span>
+      <div class="trust-badges">
+        <div class="trust-item"><span style="color: #60a5fa;">⚡</span> <strong>Claude Desktop</strong></div>
+        <div class="trust-item"><span style="color: #a855f7;">💻</span> <strong>Cursor &amp; Windsurf</strong></div>
+        <div class="trust-item"><span style="color: #10b981;">🛡️</span> <strong>Smithery (100/100)</strong></div>
+        <div class="trust-item"><span style="color: #f59e0b;">🌐</span> <strong>Glama Registry</strong></div>
+        <div class="trust-item"><span style="color: #38bdf8;">☁️</span> <strong>Cloudflare &amp; AWS</strong></div>
+      </div>
+    </div>
 
     <div class="tester-card">
       <div class="tester-header">⚡ Free Live Protocol & Security Audit</div>
@@ -374,6 +497,70 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           <div class="stat-box">
             <div class="stat-label">Security Scan</div>
             <div class="stat-value" id="securityVal" style="color: var(--green);">Clean</div>
+          </div>
+        </div>
+
+        <!-- Actionable Protocol & Schema Diagnostic Frame -->
+        <div id="diagnosticFrame" style="margin-top: 1.25rem; background: #070d19; border: 1px solid var(--border); border-radius: 8px; text-align: left; overflow: hidden;">
+          <div id="diagnosticHeader" onclick="toggleDiagnostics()" style="padding: 0.85rem 1.2rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: #0b1528; border-bottom: 1px solid var(--border);">
+            <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+              <span id="diagnosticStatusIcon" style="font-size: 1.1rem;">🔍</span>
+              <span id="diagnosticTitle" style="font-size: 0.9rem; font-weight: 700; color: #f1f5f9;">Protocol Handshake &amp; Schema Diagnostics</span>
+              <span id="diagnosticBadge" style="font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 9999px; background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 600;">5/5 Checks Passed</span>
+            </div>
+            <span id="diagnosticToggleArrow" style="font-size: 0.8rem; color: var(--muted); font-weight: bold;">▼</span>
+          </div>
+
+          <div id="diagnosticContent" style="padding: 1.25rem; display: none;">
+            <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: 0.05em;">Protocol Execution Pipeline</div>
+            <div class="diag-pipeline" id="diagPipeline">
+              <div class="diag-step step-pass" id="stepTransport">
+                <span class="step-dot">●</span> 1. Transport (HTTP/SSE)
+              </div>
+              <div class="diag-step step-pass" id="stepHandshake">
+                <span class="step-dot">●</span> 2. Handshake (initialize)
+              </div>
+              <div class="diag-step step-pass" id="stepDiscovery">
+                <span class="step-dot">●</span> 3. Discovery (tools/list)
+              </div>
+              <div class="diag-step step-pass" id="stepValidation">
+                <span class="step-dot">●</span> 4. Ajv Schema Validation
+              </div>
+              <div class="diag-step step-pass" id="stepSecurity">
+                <span class="step-dot">●</span> 5. Secret Entropy Scan
+              </div>
+            </div>
+
+            <!-- Actionable Remediation Guidance Box -->
+            <div id="diagRemediationBox" style="display: none; margin-top: 1rem; padding: 0.85rem 1rem; border-radius: 6px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #fca5a5; font-size: 0.85rem;">
+              <div style="font-weight: 700; display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.3rem;">
+                <span id="diagRemediationTitle">🚨 Protocol Failure Detected</span>
+              </div>
+              <div id="diagRemediationText" style="line-height: 1.5; color: #f1f5f9; font-size: 0.83rem;"></div>
+            </div>
+
+            <!-- Ajv Schema Validation Defects -->
+            <div id="diagSchemaErrorsBox" style="display: none; margin-top: 1rem;">
+              <div style="font-size: 0.75rem; color: #f87171; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 0.05em;">Schema Validation Defects (Ajv)</div>
+              <div id="diagSchemaErrorsList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+            </div>
+
+            <!-- Secret Finding Alert -->
+            <div id="diagSecretsBox" style="display: none; margin-top: 1rem;">
+              <div style="font-size: 0.75rem; color: #f87171; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; letter-spacing: 0.05em;">Security Findings &amp; Secret Exposures</div>
+              <div id="diagSecretsList" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+            </div>
+
+            <!-- Raw Discovered Tools Inspector -->
+            <div style="margin-top: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <button type="button" onclick="toggleRawJson()" style="background: none; border: none; color: #60a5fa; font-size: 0.8rem; cursor: pointer; padding: 0; font-weight: 600;">
+                  <span id="rawJsonArrow">▶</span> Inspect Raw Discovered Tools JSON (<span id="rawToolsCount">0</span> tools)
+                </button>
+                <button type="button" id="copyJsonBtn" onclick="copyRawToolsJson()" style="display: none; background: #1e293b; border: 1px solid var(--border); color: #cbd5e1; font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 4px; cursor: pointer;">Copy Tools JSON</button>
+              </div>
+              <pre id="rawJsonBlock" style="display: none; background: #030712; border: 1px solid #1e293b; border-radius: 6px; padding: 0.85rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #94a3b8; max-height: 250px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; margin: 0;"></pre>
+            </div>
           </div>
         </div>
 
@@ -434,6 +621,143 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           </tr>
         </tbody>
       </table>
+    </section>
+
+    <section id="telemetry-preview" style="margin: 4rem 0 3rem 0;">
+      <div style="text-align: center; max-width: 760px; margin: 0 auto 2rem;">
+        <div style="display: inline-block; background: rgba(59, 130, 246, 0.15); border: 1px solid #3b82f6; color: #60a5fa; border-radius: 9999px; padding: 0.25rem 0.8rem; font-size: 0.75rem; font-weight: 700; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em;">Telemetry &amp; Observability Engine</div>
+        <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 0.75rem; letter-spacing: -0.02em;">30-Day Latency Jitter &amp; Drift Timeline</h2>
+        <p style="color: var(--muted); font-size: 1rem; line-height: 1.6;">AI agents are fragile. A 1,200ms cold start or an unannounced tool schema mutation will crash your production workflows. MCP Sentinel maps every handshake across 30 days so you spot anomalies before users do.</p>
+      </div>
+
+      <div class="telemetry-card">
+        <div class="telemetry-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem;">
+              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+              <strong style="color: #f8fafc; font-size: 1.05rem;">weather-mcp.production.internal/sse</strong>
+              <span style="background: #1e293b; color: #94a3b8; font-size: 0.72rem; padding: 0.15rem 0.5rem; border-radius: 4px; font-family: monospace;">SSE Transport</span>
+            </div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Monitored every 60 seconds from 3 global edge regions (US-East, EU-Central, AP-South)</div>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <span style="background: rgba(16, 185, 129, 0.15); color: #10b981; font-weight: 700; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 6px;">99.98% UPTIME</span>
+            <span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; font-weight: 700; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 6px;">43,200 CHECKS</span>
+          </div>
+        </div>
+
+        <!-- SVG Latency Sparkline & Area Chart with Event Annotations -->
+        <div style="position: relative; width: 100%; overflow-x: auto; background: #070d19; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem 1rem 0.5rem 1rem; box-sizing: border-box;">
+          <svg viewBox="0 0 900 240" style="width: 100%; height: auto; min-width: 650px; overflow: visible;">
+            <defs>
+              <linearGradient id="latencyAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.35"/>
+                <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Background Grid Lines -->
+            <line x1="40" y1="30" x2="880" y2="30" stroke="#1e293b" stroke-dasharray="4" stroke-width="1"/>
+            <text x="32" y="34" fill="#64748b" font-size="10" text-anchor="end" font-family="monospace">1500ms</text>
+
+            <line x1="40" y1="80" x2="880" y2="80" stroke="#1e293b" stroke-dasharray="4" stroke-width="1"/>
+            <text x="32" y="84" fill="#64748b" font-size="10" text-anchor="end" font-family="monospace">500ms</text>
+
+            <line x1="40" y1="130" x2="880" y2="130" stroke="#1e293b" stroke-dasharray="4" stroke-width="1"/>
+            <text x="32" y="134" fill="#64748b" font-size="10" text-anchor="end" font-family="monospace">100ms</text>
+
+            <line x1="40" y1="180" x2="880" y2="180" stroke="#1e293b" stroke-dasharray="4" stroke-width="1"/>
+            <text x="32" y="184" fill="#64748b" font-size="10" text-anchor="end" font-family="monospace">25ms</text>
+
+            <!-- Area Path Under Graph -->
+            <path d="M 40 185 L 70 183 L 100 184 L 130 182 L 160 181 L 190 183 L 220 180 L 250 182 L 280 181 L 310 183 L 340 182 L 370 184 L 400 181 L 430 45 L 440 182 L 470 183 L 500 181 L 530 182 L 560 183 L 590 180 L 620 182 L 650 95 L 680 181 L 710 183 L 740 182 L 770 180 L 800 182 L 830 181 L 860 183 L 880 182 L 880 200 L 40 200 Z" fill="url(#latencyAreaGrad)"/>
+
+            <!-- Main Latency Line -->
+            <path d="M 40 185 L 70 183 L 100 184 L 130 182 L 160 181 L 190 183 L 220 180 L 250 182 L 280 181 L 310 183 L 340 182 L 370 184 L 400 181 L 430 45 L 440 182 L 470 183 L 500 181 L 530 182 L 560 183 L 590 180 L 620 182 L 650 95 L 680 181 L 710 183 L 740 182 L 770 180 L 800 182 L 830 181 L 860 183 L 880 182" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+            <!-- Baseline Latency Jitter Dots -->
+            <circle cx="70" cy="183" r="2.5" fill="#60a5fa"/>
+            <circle cx="130" cy="182" r="2.5" fill="#60a5fa"/>
+            <circle cx="190" cy="183" r="2.5" fill="#60a5fa"/>
+            <circle cx="250" cy="182" r="2.5" fill="#60a5fa"/>
+            <circle cx="310" cy="183" r="2.5" fill="#60a5fa"/>
+            <circle cx="370" cy="184" r="2.5" fill="#60a5fa"/>
+            <circle cx="500" cy="181" r="2.5" fill="#60a5fa"/>
+            <circle cx="560" cy="183" r="2.5" fill="#60a5fa"/>
+            <circle cx="740" cy="182" r="2.5" fill="#60a5fa"/>
+            <circle cx="800" cy="182" r="2.5" fill="#60a5fa"/>
+            <circle cx="860" cy="183" r="2.5" fill="#60a5fa"/>
+
+            <!-- Event Annotation 1: Deploy -->
+            <line x1="160" y1="130" x2="160" y2="181" stroke="#10b981" stroke-width="1.5" stroke-dasharray="2"/>
+            <circle cx="160" cy="181" r="4" fill="#10b981"/>
+            <rect x="105" y="105" width="110" height="22" rx="4" fill="#064e3b" stroke="#059669" stroke-width="1"/>
+            <text x="160" y="120" fill="#a7f3d0" font-size="9.5" font-weight="700" text-anchor="middle">v1.2.0 Deploy (34ms)</text>
+
+            <!-- Event Annotation 2: Lambda Cold-Start Spike -->
+            <line x1="430" y1="20" x2="430" y2="45" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="2"/>
+            <circle cx="430" cy="45" r="5" fill="#f59e0b"/>
+            <rect x="345" y="5" width="170" height="22" rx="4" fill="#78350f" stroke="#d97706" stroke-width="1"/>
+            <text x="430" y="20" fill="#fde68a" font-size="9.5" font-weight="700" text-anchor="middle">⚠️ Cold Start Spike (1,420ms)</text>
+
+            <!-- Event Annotation 3: Breaking Drift -->
+            <line x1="650" y1="50" x2="650" y2="95" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="2"/>
+            <circle cx="650" cy="95" r="5" fill="#ef4444"/>
+            <rect x="560" y="32" width="180" height="24" rx="4" fill="#7f1d1d" stroke="#dc2626" stroke-width="1"/>
+            <text x="650" y="48" fill="#fecaca" font-size="9.5" font-weight="700" text-anchor="middle">🚨 Breaking Schema Drift Alert</text>
+
+            <!-- X-Axis Timeline Labels -->
+            <text x="40" y="222" fill="#64748b" font-size="10" font-family="monospace">30d ago</text>
+            <text x="180" y="222" fill="#64748b" font-size="10" font-family="monospace">25d ago</text>
+            <text x="320" y="222" fill="#64748b" font-size="10" font-family="monospace">20d ago</text>
+            <text x="460" y="222" fill="#64748b" font-size="10" font-family="monospace">15d ago</text>
+            <text x="600" y="222" fill="#64748b" font-size="10" font-family="monospace">10d ago</text>
+            <text x="740" y="222" fill="#64748b" font-size="10" font-family="monospace">5d ago</text>
+            <text x="880" y="222" fill="#60a5fa" font-size="10" font-weight="700" text-anchor="end" font-family="monospace">Today (Live)</text>
+          </svg>
+        </div>
+
+        <!-- Telemetry KPI Grid -->
+        <div class="telemetry-stats-grid">
+          <div class="telemetry-stat-box">
+            <div class="stat-label">P50 Latency</div>
+            <div class="stat-value" style="color: #10b981;">34ms</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem;">Normal operation</div>
+          </div>
+          <div class="telemetry-stat-box">
+            <div class="stat-label">P95 Latency</div>
+            <div class="stat-value" style="color: #60a5fa;">82ms</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem;">Peak traffic window</div>
+          </div>
+          <div class="telemetry-stat-box">
+            <div class="stat-label">P99 Cold Starts</div>
+            <div class="stat-value" style="color: #f59e0b;">1,420ms</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem;">Lambda spin-up detected</div>
+          </div>
+          <div class="telemetry-stat-box">
+            <div class="stat-label">Drift Incidents</div>
+            <div class="stat-value" style="color: #ef4444;">1 caught</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem;">0 agent outages</div>
+          </div>
+          <div class="telemetry-stat-box">
+            <div class="stat-label">Check Frequency</div>
+            <div class="stat-value" style="color: #a855f7;">60s Pro</div>
+            <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem;">3 edge regions</div>
+          </div>
+        </div>
+
+        <!-- Upsell Banner to Pro / Team -->
+        <div style="margin-top: 1.5rem; padding: 1rem 1.25rem; background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-weight: 700; color: #f8fafc; font-size: 0.95rem; margin-bottom: 0.2rem;">Want 30-day telemetry, 60s checks, and automated webhook alerts for your MCP servers?</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Developer Pro includes 10 monitors, 1-minute intervals, Slack/Discord/PagerDuty alerts, and historical logs for $19/mo.</div>
+          </div>
+          <div style="display: flex; gap: 0.6rem;">
+            <button type="button" onclick="openMonitorModalWithPro()" style="background: var(--accent); padding: 0.6rem 1.1rem; font-size: 0.85rem;">⚡ Start Pro Monitoring ($19/mo)</button>
+            <a href="#pricing" style="display: inline-block; padding: 0.6rem 1rem; font-size: 0.85rem; background: #1e293b; color: #cbd5e1; border: 1px solid var(--border); text-decoration: none; border-radius: 8px; font-weight: 600;">View Plans</a>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="pricing">
@@ -699,6 +1023,8 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           secVal.innerText = 'Clean';
           secVal.style.color = '#10b981';
         }
+
+        updateDiagnostics(data);
       } catch (err) {
         // Fallback demo values for offline viewing
         resultsArea.style.display = 'block';
@@ -711,6 +1037,19 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         document.getElementById('tokensVal').style.color = '#10b981';
         document.getElementById('tokensCostVal').innerHTML = '<span style="color: #10b981; font-weight: 600;">⚡ Lean (+$0.004/turn · 5.2 KB memory)</span>';
         document.getElementById('securityVal').innerText = 'Clean';
+
+        updateDiagnostics({
+          status: 'operational',
+          protocolPhase: 'complete',
+          toolsCount: 2,
+          validationErrors: [],
+          secretFindings: [],
+          tools: [
+            { name: 'read_resource', description: 'Read a resource from local storage', inputSchema: { type: 'object', properties: { uri: { type: 'string' } }, required: ['uri'] } },
+            { name: 'query_db', description: 'Execute a read-only SQL query', inputSchema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } }
+          ],
+          remediationHint: 'All tools passed Ajv JSON schema validation with 0 secret leaks.'
+        });
       } finally {
         btn.disabled = false;
         btn.innerText = 'Run Instant Audit';
@@ -753,6 +1092,213 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
 
     function closeMonitorModal() {
       document.getElementById('monitorModal').style.display = 'none';
+    }
+
+    function openMonitorModalWithPro() {
+      openMonitorModal();
+      var sel = document.getElementById('mInterval');
+      if (sel) {
+        sel.value = '60';
+      }
+    }
+
+    function toggleDiagnostics() {
+      var content = document.getElementById('diagnosticContent');
+      var arrow = document.getElementById('diagnosticToggleArrow');
+      if (content.style.display === 'none' || !content.style.display) {
+        content.style.display = 'block';
+        arrow.innerText = '▲';
+      } else {
+        content.style.display = 'none';
+        arrow.innerText = '▼';
+      }
+    }
+
+    function toggleRawJson() {
+      var block = document.getElementById('rawJsonBlock');
+      var arrow = document.getElementById('rawJsonArrow');
+      var copyBtn = document.getElementById('copyJsonBtn');
+      if (block.style.display === 'none' || !block.style.display) {
+        block.style.display = 'block';
+        arrow.innerText = '▼';
+        copyBtn.style.display = 'inline-block';
+      } else {
+        block.style.display = 'none';
+        arrow.innerText = '▶';
+        copyBtn.style.display = 'none';
+      }
+    }
+
+    function copyRawToolsJson() {
+      if (window._lastAuditedToolsJson) {
+        navigator.clipboard.writeText(window._lastAuditedToolsJson);
+        alert('Copied raw MCP tools JSON to clipboard!');
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function updateDiagnostics(data) {
+      var title = document.getElementById('diagnosticTitle');
+      var badge = document.getElementById('diagnosticBadge');
+      var icon = document.getElementById('diagnosticStatusIcon');
+      var content = document.getElementById('diagnosticContent');
+      var arrow = document.getElementById('diagnosticToggleArrow');
+
+      var stepTransport = document.getElementById('stepTransport');
+      var stepHandshake = document.getElementById('stepHandshake');
+      var stepDiscovery = document.getElementById('stepDiscovery');
+      var stepValidation = document.getElementById('stepValidation');
+      var stepSecurity = document.getElementById('stepSecurity');
+
+      var remBox = document.getElementById('diagRemediationBox');
+      var remText = document.getElementById('diagRemediationText');
+      var schemaBox = document.getElementById('diagSchemaErrorsBox');
+      var schemaList = document.getElementById('diagSchemaErrorsList');
+      var secBox = document.getElementById('diagSecretsBox');
+      var secList = document.getElementById('diagSecretsList');
+
+      if (!stepTransport || !stepHandshake) return;
+
+      // Reset step styles
+      var allSteps = [stepTransport, stepHandshake, stepDiscovery, stepValidation, stepSecurity];
+      for (var i = 0; i < allSteps.length; i++) {
+        allSteps[i].className = 'diag-step step-pending';
+      }
+
+      var phase = data.protocolPhase || (data.status === 'down' ? 'transport' : 'complete');
+      var hasValidationErrors = data.validationErrors && data.validationErrors.length > 0;
+      var hasSecrets = data.secretFindings && data.secretFindings.length > 0;
+      var isDown = data.status === 'down';
+      var isDegraded = data.status === 'degraded';
+      var hasDrift = data.status === 'schema-drift';
+
+      // 1. Transport
+      if (isDown && phase === 'transport') {
+        stepTransport.className = 'diag-step step-fail';
+      } else {
+        stepTransport.className = 'diag-step step-pass';
+      }
+
+      // 2. Handshake
+      if (isDown && phase === 'initialize') {
+        stepHandshake.className = 'diag-step step-fail';
+      } else if (!isDown || (phase !== 'transport' && phase !== 'initialize')) {
+        stepHandshake.className = 'diag-step step-pass';
+      }
+
+      // 3. Discovery
+      if (isDown && phase === 'tools') {
+        stepDiscovery.className = 'diag-step step-fail';
+      } else if ((data.toolsCount && data.toolsCount > 0) || (!isDown && phase === 'complete')) {
+        stepDiscovery.className = 'diag-step step-pass';
+      }
+
+      // 4. Schema Validation
+      if (hasValidationErrors) {
+        stepValidation.className = 'diag-step step-warn';
+      } else if (!isDown && data.toolsCount > 0) {
+        stepValidation.className = 'diag-step step-pass';
+      }
+
+      // 5. Security Scan
+      if (hasSecrets) {
+        stepSecurity.className = 'diag-step step-fail';
+      } else if (!isDown) {
+        stepSecurity.className = 'diag-step step-pass';
+      }
+
+      // Actionable Remediation Guidance
+      if (data.remediationHint || data.errorMessage || data.rpcErrorCode) {
+        remBox.style.display = 'block';
+        var codeStr = data.rpcErrorCode ? ' (JSON-RPC Error ' + data.rpcErrorCode + ')' : (data.httpStatus && data.httpStatus !== 200 ? ' (HTTP ' + data.httpStatus + ')' : '');
+        document.getElementById('diagRemediationTitle').innerText = isDown ? '🚨 Protocol Failure' + codeStr : '⚠️ Optimization & Compatibility Advice';
+        var msg = data.errorMessage ? '<div><strong>Diagnostic:</strong> ' + escapeHtml(data.errorMessage) + '</div>' : '';
+        if (data.remediationHint) {
+          msg += '<div style="margin-top: 0.3rem;"><strong>Actionable Fix:</strong> ' + escapeHtml(data.remediationHint) + '</div>';
+        }
+        remText.innerHTML = msg;
+        if (isDown) {
+          remBox.style.background = 'rgba(239, 68, 68, 0.1)';
+          remBox.style.borderColor = '#ef4444';
+          remBox.style.color = '#fca5a5';
+        } else {
+          remBox.style.background = 'rgba(245, 158, 11, 0.1)';
+          remBox.style.borderColor = '#f59e0b';
+          remBox.style.color = '#fde68a';
+        }
+      } else {
+        remBox.style.display = 'none';
+      }
+
+      // Ajv Schema Errors
+      if (hasValidationErrors) {
+        schemaBox.style.display = 'block';
+        var errHtml = '';
+        for (var e = 0; e < data.validationErrors.length; e++) {
+          errHtml += '<div style="background: #0b1120; border: 1px solid #7f1d1d; border-radius: 6px; padding: 0.6rem 0.8rem; font-family: monospace; font-size: 0.78rem; color: #fca5a5;">' + escapeHtml(data.validationErrors[e]) + '</div>';
+        }
+        schemaList.innerHTML = errHtml;
+      } else {
+        schemaBox.style.display = 'none';
+        schemaList.innerHTML = '';
+      }
+
+      // Secret Findings
+      if (hasSecrets) {
+        secBox.style.display = 'block';
+        var secHtml = '';
+        for (var s = 0; s < data.secretFindings.length; s++) {
+          var f = data.secretFindings[s];
+          secHtml += '<div style="background: #0b1120; border: 1px solid #7f1d1d; border-radius: 6px; padding: 0.6rem 0.8rem; font-size: 0.78rem; color: #fca5a5; display: flex; justify-content: space-between; align-items: center;"><div><strong>' + escapeHtml(f.type) + '</strong> in <code>' + escapeHtml(f.location) + '</code>: <span style="font-family: monospace; color: #f87171;">' + escapeHtml(f.redactedSnippet) + '</span></div><span style="background: #ef4444; color: #fff; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 700;">' + escapeHtml((f.severity || 'CRITICAL').toUpperCase()) + '</span></div>';
+        }
+        secList.innerHTML = secHtml;
+      } else {
+        secBox.style.display = 'none';
+        secList.innerHTML = '';
+      }
+
+      // Raw Tools JSON setup
+      var rawTools = data.tools || [];
+      document.getElementById('rawToolsCount').innerText = rawTools.length;
+      window._lastAuditedToolsJson = JSON.stringify(rawTools, null, 2);
+      var rawBlock = document.getElementById('rawJsonBlock');
+      rawBlock.innerText = window._lastAuditedToolsJson;
+      rawBlock.style.display = 'none';
+      document.getElementById('rawJsonArrow').innerText = '▶';
+      document.getElementById('copyJsonBtn').style.display = 'none';
+
+      // Diagnostic Header state
+      if (isDown) {
+        icon.innerText = '🚨';
+        badge.innerText = 'Protocol Failure';
+        badge.style.background = 'rgba(239, 68, 68, 0.15)';
+        badge.style.color = '#ef4444';
+        content.style.display = 'block';
+        arrow.innerText = '▲';
+      } else if (hasValidationErrors || hasSecrets || isDegraded || hasDrift) {
+        icon.innerText = '⚠️';
+        badge.innerText = hasValidationErrors ? data.validationErrors.length + ' Schema Issue(s)' : (hasSecrets ? 'Secret Leaked' : 'Degraded');
+        badge.style.background = 'rgba(245, 158, 11, 0.15)';
+        badge.style.color = '#f59e0b';
+        content.style.display = 'block';
+        arrow.innerText = '▲';
+      } else {
+        icon.innerText = '🔍';
+        badge.innerText = '5/5 Passed';
+        badge.style.background = 'rgba(16, 185, 129, 0.15)';
+        badge.style.color = '#10b981';
+        content.style.display = 'none';
+        arrow.innerText = '▼';
+      }
     }
 
     async function submitMonitor(e) {

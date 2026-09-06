@@ -443,6 +443,10 @@ export default {
               schemaSizeBytes: 5259,
               approxContextTokens: 1315,
               secretFindings: [],
+              validationErrors: [],
+              toolValidationErrors: {},
+              protocolPhase: 'complete',
+              remediationHint: 'All registered MCP tools passed Ajv JSON schema validation with 0 secret leaks and valid protocol handshake.',
             }),
             {
               status: 200,

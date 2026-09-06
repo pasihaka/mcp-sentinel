@@ -160,6 +160,15 @@ export type CheckStatus =
   | 'secret-leak'
   | 'down';
 
+export type ProtocolPhase =
+  | 'transport'
+  | 'initialize'
+  | 'tools'
+  | 'resources'
+  | 'prompts'
+  | 'validation'
+  | 'complete';
+
 export interface CheckExecutionResult {
   monitorId?: string;
   timestamp: number;
@@ -180,5 +189,11 @@ export interface CheckExecutionResult {
   approxContextTokens?: number;
   diffResult?: SchemaDiffResult;
   secretFindings: SecretLeakFinding[];
+  validationErrors?: string[];
+  toolValidationErrors?: Record<string, string[]>;
+  protocolPhase?: ProtocolPhase;
+  rpcErrorCode?: number;
+  remediationHint?: string;
   errorMessage?: string;
 }
+
