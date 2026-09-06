@@ -18,11 +18,12 @@ Traditional uptime monitors stop at `HTTP 200 OK`. **MCP Sentinel** is a **Unive
 * **Typed Output Verification (Smithery 100/100):** Validates both parameter schemas and structured `outputSchema` contracts to ensure remote tools never crash client LLMs with unexpected payload shapes.
 * **Real JSON-RPC 2.0 Handshake:** Subscribes to SSE streams, handles hybrid event frames, and benchmarks tool discovery latency in real time.
 * **Ajv Schema Validation:** Detects malformed tool input schemas, syntax errors, and missing property declarations.
+* **Dynamic Schema Drift Simulation (v1.4.0):** Interactive landing page debugger dynamically inspects any audited server's real tool signatures and simulates unannounced field renames, type mutations, and agent runtime crashes with instant remediation hints.
 * **Breaking Schema Drift Detection:** Computes canonical SHA-256 hashes across tool definitions. Detects removed tools, deleted parameters, mutated parameter types, and newly added required fields.
 * **Secret & Credential Scanner:** Audits tool descriptions and parameters for exposed OpenAI/Anthropic API keys, AWS credentials, and hardcoded database connection strings with automated redaction.
 * **Hosted Public Status Pages (`/status/:monitorId`):** Dedicated, edge-rendered public status dashboards with 60-bar uptime history, round-trip latency metrics, discovered tool catalog, schema context tax estimation, and automated dynamic README badges.
 * **Dynamic GitHub README Badges:** Embeddable, edge-cached SVG status and schema verification badges that link directly to your public status page.
-* **Multi-Channel Alerting:** Instant notifications via Slack Block Kit and Discord Webhook embeds.
+* **Multi-Channel Alerting & Test Ping:** Instant notifications via Slack Block Kit and Discord Webhook embeds with zero-risk one-click verification webhooks.
 
 ---
 
@@ -69,7 +70,7 @@ MCP Sentinel is a cloud-hosted B2B developer SaaS utility.
 | Tier | Price | Features |
 | :--- | :--- | :--- |
 | **Free Community** | **$0 / month** | 1 remote server, 30-minute check intervals, dynamic GitHub badge, email alerts. |
-| **Developer Pro** | **$19 / month** | Up to 5 remote servers, 1-minute synthetic checks, breaking schema drift alerts, Slack & Discord webhooks, 30-day logs. |
+| **Developer Pro** | **$19 / month** | **14-day free trial (no card required)**. Up to 5 remote servers, 1-minute synthetic checks, breaking schema drift alerts, Slack & Discord webhooks, 30-day logs. |
 | **Team** | **$49 / month** | Up to 20 remote servers, continuous secret & token leak scanning, multi-region synthetic checks, PagerDuty integration. |
 
 ---

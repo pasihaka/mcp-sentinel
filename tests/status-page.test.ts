@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { renderStatusPage } from '../src/edge/status-page.js';
 import { renderNotFoundPage } from '../src/edge/not-found-page.js';
+import { generateSessionToken } from '../src/auth/magic-link.js';
 import worker from '../src/edge/worker.js';
 
 describe('Public Hosted Status Page', () => {
@@ -281,5 +282,124 @@ describe('Worker Status Page HTTP Routes', () => {
     expect(text).toContain('audit_mcp_server');
     expect(text).toContain('verify_mcp_protocol');
     expect(text).toContain('get_monitor_badge');
+  });
+});
+
+describe('Worker Security & Edge Resilience', () => {
+  const originUrl = 'https://mcp-sentinel.pasihakamaki.workers.dev';
+  const testSecret = 'test-secret-at-least-32-chars-long!';
+  const ctx: any = { waitUntil: () => {} };
+
+  const mockMonitors = [
+    {
+      id: 'mon_sensitive_1',
+      name: 'Private Jira MCP',
+      user_id: 'u_test_123',
+      endpoint_url: 'https://jira.internal/mcp',
+      auth_header: 'Bearer secret_jira_api_token_abc999',
+      is_active: 1,
+    },
+  ];
+
+  const mockEnv: any = {
+    AUTH_SECRET: testSecret,
+    DB: {
+      prepare: (query: string) => ({
+        bind: (...args: any[]) => ({
+          all: async () => ({ results: mockMonitors }),
+          first: async () => mockMonitors[0],
+        }),
+      }),
+    },
+  };
+
+  it('serves branded 404 HTML page when browser requests unknown route', async () => {
+    const req = new Request(`${originUrl}/some-nonexistent-page`, {
+      method: 'GET',
+      headers: { Accept: 'text/html,application/xhtml+xml' },
+    });
+    const res = await worker.fetch(req, {}, ctx);
+
+    expect(res.status).toBe(404);
+    expect(res.headers.get('Content-Type')).toContain('text/html');
+    const text = await res.text();
+    expect(text).toContain('Page Not Found');
+    expect(text).toContain('/some-nonexistent-page');
+    expect(text).toContain('Return to MCP Sentinel');
+  });
+
+  it('serves JSON 404 when API client requests unknown route', async () => {
+    const req = new Request(`${originUrl}/api/nonexistent-endpoint`, {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+    });
+    const res = await worker.fetch(req, {}, ctx);
+
+    expect(res.status).toBe(404);
+    expect(res.headers.get('Content-Type')).toContain('application/json');
+    const body: any = await res.json();
+    expect(body.error).toBe('Not found');
+  });
+
+  it('redacts sensitive auth_header credentials on GET /api/monitors and GET /api/monitors/:id', async () => {
+    const token = await generateSessionToken(
+      { userId: 'u_test_123', email: 'audit@example.com', tier: 'pro' },
+      testSecret
+    );
+
+    // Test GET /api/monitors
+    const listReq = new Request(`${originUrl}/api/monitors`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const listRes = await worker.fetch(listReq, mockEnv, ctx);
+    expect(listRes.status).toBe(200);
+    const listBody: any = await listRes.json();
+    expect(listBody.monitors[0].auth_header).toBe('••••••••');
+    expect(listBody.monitors[0].auth_header).not.toContain('secret_jira_api_token');
+
+    // Test GET /api/monitors/:id
+    const detailReq = new Request(`${originUrl}/api/monitors/mon_sensitive_1`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const detailRes = await worker.fetch(detailReq, mockEnv, ctx);
+    expect(detailRes.status).toBe(200);
+    const detailBody: any = await detailRes.json();
+    expect(detailBody.monitor.auth_header).toBe('••••••••');
+    expect(detailBody.monitor.auth_header).not.toContain('secret_jira_api_token');
+  });
+
+  it('safely handles empty or malformed JSON payloads without 500 crashes', async () => {
+    // 1. /api/check-now with malformed body
+    const checkReq = new Request(`${originUrl}/api/check-now`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: 'this-is-not-valid-json{{{',
+    });
+    const checkRes = await worker.fetch(checkReq, {}, ctx);
+    expect(checkRes.status).toBe(400);
+    const checkBody: any = await checkRes.json();
+    expect(checkBody.error).toBe('Missing or invalid "endpointUrl" parameter.');
+
+    // 2. /api/auth/magic-link with malformed body
+    const authReq = new Request(`${originUrl}/api/auth/magic-link`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '',
+    });
+    const authRes = await worker.fetch(authReq, {}, ctx);
+    expect(authRes.status).toBe(400);
+    const authBody: any = await authRes.json();
+    expect(authBody.error).toContain('Please provide a valid email address.');
+
+    // 3. /api/monitors with empty/malformed body
+    const monReq = new Request(`${originUrl}/api/monitors`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{ broken json',
+    });
+    const monRes = await worker.fetch(monReq, mockEnv, ctx);
+    expect(monRes.status).toBe(400);
+    const monBody: any = await monRes.json();
+    expect(monBody.error).toContain('Missing required "endpointUrl" or "name".');
   });
 });

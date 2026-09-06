@@ -408,7 +408,7 @@ export default {
 
       // 4. Instant On-Demand Audit Endpoint (Public / Free Tester)
       if (url.pathname === '/api/check-now' && request.method === 'POST') {
-        const body: any = await request.json();
+        const body: any = await request.json().catch(() => ({}));
         if (!body.endpointUrl || typeof body.endpointUrl !== 'string') {
           return new Response(JSON.stringify({ error: 'Missing or invalid "endpointUrl" parameter.' }), {
             status: 400,
@@ -514,7 +514,7 @@ export default {
 
       // 5. Auth Routes: Passwordless Magic Link
       if (url.pathname === '/api/auth/magic-link' && request.method === 'POST') {
-        const body: any = await request.json();
+        const body: any = await request.json().catch(() => ({}));
         const email = body.email ? String(body.email).trim().toLowerCase() : '';
 
         if (!email || !email.includes('@') || !email.includes('.')) {
@@ -679,7 +679,15 @@ export default {
           });
         }
 
-        const event = JSON.parse(rawBody);
+        let event: any;
+        try {
+          event = JSON.parse(rawBody);
+        } catch {
+          return new Response(JSON.stringify({ error: 'Malformed JSON payload' }), {
+            status: 400,
+            headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+          });
+        }
         if (env.DB) {
           await handleStripeWebhookEvent(event, env.DB);
         }
@@ -772,7 +780,14 @@ export default {
         }
 
         const session = await getAuthenticatedUser(request, env);
-        const body: any = await request.json();
+        const body: any = await request.json().catch(() => ({}));
+
+        if (!body.endpointUrl || !body.name) {
+          return new Response(JSON.stringify({ error: 'Missing required "endpointUrl" or "name".' }), {
+            status: 400,
+            headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+          });
+        }
 
         let userId = session?.userId;
         let userTier: 'free' | 'pro' | 'team' = (session?.tier as any) || 'free';
@@ -813,13 +828,6 @@ export default {
             }),
             { status: 403, headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' } }
           );
-        }
-
-        if (!body.endpointUrl || !body.name) {
-          return new Response(JSON.stringify({ error: 'Missing required "endpointUrl" or "name".' }), {
-            status: 400,
-            headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
-          });
         }
 
         const requestedInterval = Number(body.checkIntervalSeconds) || 1800;
@@ -916,7 +924,12 @@ export default {
           .bind(session.userId)
           .all();
 
-        return new Response(JSON.stringify({ monitors: rows.results || [] }), {
+        const safeMonitors = (rows.results || []).map((m: any) => ({
+          ...m,
+          auth_header: m.auth_header ? '••••••••' : null,
+        }));
+
+        return new Response(JSON.stringify({ monitors: safeMonitors }), {
           status: 200,
           headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
         });
@@ -942,6 +955,11 @@ export default {
           });
         }
 
+        // Redact auth_header so sensitive credentials are never leaked
+        if (monitor.auth_header) {
+          monitor.auth_header = '••••••••';
+        }
+
         const logs = await env.DB.prepare(
           'SELECT * FROM check_logs WHERE monitor_id = ? ORDER BY timestamp DESC LIMIT 20'
         )
@@ -962,6 +980,17 @@ export default {
         return new Response(JSON.stringify({ status: 'ok', service: 'mcp-sentinel' }), {
           status: 200,
           headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+        });
+      }
+
+      if (request.method === 'GET' && request.headers.get('Accept')?.includes('text/html')) {
+        const notFoundHtml = renderNotFoundPage(url.origin, url.pathname, 'page');
+        return new Response(notFoundHtml, {
+          status: 404,
+          headers: {
+            ...CORS_HEADERS,
+            'Content-Type': 'text/html; charset=utf-8',
+          },
         });
       }
 

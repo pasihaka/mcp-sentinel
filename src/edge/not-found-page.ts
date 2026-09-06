@@ -1,10 +1,17 @@
-export function renderNotFoundPage(originUrl: string, monitorId: string): string {
+export function renderNotFoundPage(originUrl: string, resourceId: string, resourceType: 'monitor' | 'page' = 'monitor'): string {
+  const isPage = resourceType === 'page';
+  const title = isPage ? 'Page Not Found — MCP Sentinel' : 'Monitor Not Found — MCP Sentinel';
+  const heading = isPage ? 'Page Not Found' : 'Monitor Not Found';
+  const message = isPage
+    ? `The requested route <span class="code">${escapeHtml(resourceId)}</span> could not be found.`
+    : `We couldn't find an active MCP monitor with identifier <span class="code">${escapeHtml(resourceId)}</span>. The monitor may have been renamed or removed.`;
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monitor Not Found — MCP Sentinel</title>
+  <title>${title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -91,8 +98,8 @@ export function renderNotFoundPage(originUrl: string, monitorId: string): string
 <body>
   <div class="card">
     <div class="badge">404 · NOT FOUND</div>
-    <h1>Monitor Not Found</h1>
-    <p>We couldn't find an active MCP monitor with identifier <span class="code">${escapeHtml(monitorId)}</span>. The monitor may have been renamed or removed.</p>
+    <h1>${heading}</h1>
+    <p>${message}</p>
     <a href="${originUrl}" class="btn">Return to MCP Sentinel</a>
   </div>
 </body>
