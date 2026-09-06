@@ -62,6 +62,7 @@ export async function executeSyntheticCheck(
       protocolVersion: discovery.protocolVersion,
       serverInfo: discovery.serverInfo,
       capabilities: discovery.capabilities,
+      tools: discovery.tools,
       toolsCount: discovery.tools.length,
       resourcesCount: discovery.resources.length,
       promptsCount: discovery.prompts.length,

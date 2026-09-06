@@ -383,6 +383,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <div class="badge-code" id="badgeMarkdown">[![MCP Sentinel Status](https://mcp-sentinel.pasihakamaki.workers.dev/badge/demo/status.svg)](https://mcp-sentinel.pasihakamaki.workers.dev/status/demo)</div>
           </div>
           <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" onclick="openStatusPageForAuditedServer()" style="padding: 0.5rem 1rem; font-size: 0.8rem; background: #1e293b; border: 1px solid var(--border); color: #93c5fa; border-radius: 6px; cursor: pointer; font-weight: 600;">🔗 View Live Status Page</button>
             <button type="button" onclick="copyBadge()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Copy Markdown</button>
             <button type="button" onclick="openMonitorModal(document.getElementById('endpointInput').value)" style="padding: 0.5rem 1rem; font-size: 0.8rem; background: #10b981;">⚡ Monitor 24/7 with Alerts</button>
           </div>
@@ -592,6 +593,10 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           <button type="button" onclick="copyMonitorBadge()" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">Copy Markdown</button>
         </div>
 
+        <div style="margin-bottom: 0.75rem;">
+          <a id="mStatusPageBtn" href="#" target="_blank" style="display: block; width: 100%; text-align: center; background: var(--accent); color: #fff; text-decoration: none; font-weight: 600; font-size: 0.9rem; padding: 0.75rem; border-radius: 8px; transition: background 0.2s;">🔗 Open Live Status Page ➔</a>
+        </div>
+
         <button type="button" onclick="closeMonitorModal()" style="background: #1f2937; width: 100%;">Done</button>
       </div>
     </div>
@@ -792,6 +797,11 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         const badgeMd = '[![MCP Sentinel Status](' + data.statusBadgeUrl + ')](' + window.location.origin + '/status/' + data.monitorId + ')';
         document.getElementById('mBadgeCode').innerText = badgeMd;
         document.getElementById('mBadgePreview').innerHTML = '<img src="' + data.statusBadgeUrl + '" alt="status badge">';
+
+        const statusBtn = document.getElementById('mStatusPageBtn');
+        if (statusBtn) {
+          statusBtn.href = '/status/' + data.monitorId;
+        }
       } catch (err) {
         alert('Error: ' + err.message);
       } finally {
@@ -805,6 +815,21 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       navigator.clipboard.writeText(code);
       alert('Copied badge Markdown to clipboard!');
     }
+
+    function openStatusPageForAuditedServer() {
+      var url = document.getElementById('endpointInput').value.trim();
+      if (url) {
+        window.open('/status?url=' + encodeURIComponent(url), '_blank');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      var params = new URLSearchParams(window.location.search);
+      var addUrl = params.get('add');
+      if (addUrl) {
+        openMonitorModal(addUrl);
+      }
+    });
   </script>
 </body>
 </html>`;

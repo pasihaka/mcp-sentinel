@@ -237,4 +237,35 @@ describe('Worker Status Page HTTP Routes', () => {
     expect(text).toContain('read_channel');
     expect(text).toContain('https://mcp-sentinel.pasihakamaki.workers.dev/status/mon-prod-001');
   });
+
+  it('redirects to /status/demo if GET /status called without url parameter', async () => {
+    const req = new Request('https://mcp-sentinel.pasihakamaki.workers.dev/status');
+    const res = await worker.fetch(req, env, ctx);
+
+    expect(res.status).toBe(302);
+    expect(res.headers.get('Location')).toContain('/status/demo');
+  });
+
+  it('redirects to existing monitor page when URL is already registered in D1', async () => {
+    const mockEnv: any = {
+      DB: {
+        prepare: (query: string) => ({
+          bind: (...args: any[]) => ({
+            first: async () => {
+              if (query.includes('FROM monitors WHERE endpoint_url')) {
+                return { id: 'mon-existing-789' };
+              }
+              return null;
+            },
+          }),
+        }),
+      },
+    };
+
+    const req = new Request('https://mcp-sentinel.pasihakamaki.workers.dev/status?url=https://slack-mcp.internal/mcp');
+    const res = await worker.fetch(req, mockEnv, ctx);
+
+    expect(res.status).toBe(302);
+    expect(res.headers.get('Location')).toContain('/status/mon-existing-789');
+  });
 });

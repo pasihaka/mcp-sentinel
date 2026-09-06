@@ -171,6 +171,7 @@ export interface CheckExecutionResult {
   protocolVersion?: string;
   serverInfo?: ImplementationInfo;
   capabilities?: ServerCapabilities;
+  tools?: MCPTool[];
   toolsCount: number;
   resourcesCount: number;
   promptsCount: number;

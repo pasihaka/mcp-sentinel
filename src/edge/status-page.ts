@@ -282,6 +282,8 @@ export function renderStatusPage(
   const safeEndpoint = sanitizeEndpointUrl(monitor.endpoint_url);
   const lastCheckedText = monitor.last_checked_at ? formatRelativeTime(monitor.last_checked_at) : 'Just now';
 
+  const isLivePreview = monitor.id.startsWith('live-');
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -713,6 +715,7 @@ export function renderStatusPage(
         ${escapeHtml(monitor.name)}
       </div>
       <div class="endpoint-meta">
+        ${isLivePreview ? '<span class="pill" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.4); font-size: 0.72rem;">⚡ ON-DEMAND PROBE</span> <span>·</span>' : ''}
         <span>Endpoint:</span>
         <span class="endpoint-code">${escapeHtml(safeEndpoint)}</span>
         <span>·</span>
@@ -814,6 +817,7 @@ export function renderStatusPage(
       <div class="badge-left">
         <div style="font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 0.2rem;">Add Live Status Badge to Your GitHub README:</div>
         <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.6rem;">This badge dynamically updates its color on every synthetic probe and links back to this status page.</div>
+        ${isLivePreview ? '<div style="font-size: 0.8rem; color: #93c5fd; margin-bottom: 0.5rem;">⚡ <em>Save this monitor to activate permanent dynamic badges for this server.</em></div>' : ''}
         <div style="margin-bottom: 0.6rem;">
           <img src="${badgeSvgUrl}" alt="MCP Sentinel Status" height="20">
         </div>
@@ -826,9 +830,11 @@ export function renderStatusPage(
 
     <!-- High-Converting Viral CTA -->
     <div class="viral-card">
-      <h3>Monitor your own MCP server with MCP Sentinel</h3>
-      <p>Continuous JSON-RPC 2.0 handshake validation, breaking schema drift alerts, context tax tracking, and automated GitHub README badges.</p>
-      <a href="${originUrl}/#tester" class="viral-btn">Start Free Monitoring ➔</a>
+      <h3>${isLivePreview ? 'Activate 24/7 Monitoring for this Server' : 'Monitor your own MCP server with MCP Sentinel'}</h3>
+      <p>${isLivePreview ? 'Get automated synthetic testing every 60 seconds, instant alerts on Slack/Discord when tool schemas drift, and permanent README badges.' : 'Continuous JSON-RPC 2.0 handshake validation, breaking schema drift alerts, context tax tracking, and automated GitHub README badges.'}</p>
+      <a href="${isLivePreview ? originUrl + '/?add=' + encodeURIComponent(monitor.endpoint_url) : originUrl + '/#tester'}" class="viral-btn">
+        ${isLivePreview ? '⚡ Enable 24/7 Monitoring for this Server ➔' : 'Start Free Monitoring ➔'}
+      </a>
     </div>
 
     <footer>

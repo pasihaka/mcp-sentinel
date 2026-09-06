@@ -155,7 +155,121 @@ export default {
         });
       }
 
-      // 2b. Hosted Public Status Dashboard (/status/:monitorId)
+      // 2b. On-Demand URL Status Page or Direct Lookup (/status?url=...)
+      if ((url.pathname === '/status' || url.pathname === '/status/') && (request.method === 'GET' || request.method === 'HEAD')) {
+        const queryUrl = url.searchParams.get('url');
+        if (queryUrl && typeof queryUrl === 'string') {
+          const trimmedUrl = queryUrl.trim();
+
+          // If a monitor already exists in D1 for this endpoint, redirect directly to its permanent status page
+          if (env.DB) {
+            try {
+              const existing: any = await env.DB.prepare(
+                'SELECT id FROM monitors WHERE endpoint_url = ? AND is_active = 1 LIMIT 1'
+              ).bind(trimmedUrl).first();
+
+              if (existing?.id) {
+                return Response.redirect(`${url.origin}/status/${existing.id}`, 302);
+              }
+            } catch (err) {
+              console.error('Error looking up existing monitor by URL:', err);
+            }
+          }
+
+          // Run instant on-demand synthetic probe
+          try {
+            const audit = await executeSyntheticCheck(trimmedUrl);
+
+            let serverName = audit.serverInfo?.name || 'Remote MCP Server';
+            if (serverName === 'Remote MCP Server') {
+              try {
+                const u = new URL(trimmedUrl);
+                const domain = u.hostname.replace('.workers.dev', '').replace('.com', '').replace('.dev', '');
+                serverName = domain.charAt(0).toUpperCase() + domain.slice(1) + ' MCP';
+              } catch {}
+            }
+
+            const snapshot = {
+              raw_tools_json: JSON.stringify(audit.tools || []),
+              schema_hash: audit.schemaHash || null,
+              created_at: audit.timestamp,
+            };
+
+            const html = renderStatusPage(
+              {
+                id: 'live-preview',
+                name: serverName,
+                endpoint_url: trimmedUrl,
+                status: audit.status,
+                check_interval_seconds: 60,
+                last_checked_at: audit.timestamp,
+                last_latency_ms: audit.latencyMs,
+              },
+              [
+                {
+                  id: 'live-log-1',
+                  timestamp: audit.timestamp,
+                  status: audit.status,
+                  http_status: audit.httpStatus || (audit.status === 'down' ? 500 : 200),
+                  latency_ms: audit.latencyMs,
+                  tools_count: audit.toolsCount,
+                  schema_hash: audit.schemaHash,
+                  error_message: audit.errorMessage || null,
+                },
+              ],
+              snapshot,
+              url.origin
+            );
+
+            return new Response(request.method === 'HEAD' ? null : html, {
+              status: 200,
+              headers: {
+                ...CORS_HEADERS,
+                'Content-Type': 'text/html; charset=utf-8',
+                'Cache-Control': 'public, max-age=10, s-maxage=10',
+              },
+            });
+          } catch (err: any) {
+            const html = renderStatusPage(
+              {
+                id: 'live-preview',
+                name: 'Remote MCP Server',
+                endpoint_url: trimmedUrl,
+                status: 'down',
+                check_interval_seconds: 60,
+                last_checked_at: Date.now(),
+                last_latency_ms: 0,
+              },
+              [
+                {
+                  id: 'live-err-1',
+                  timestamp: Date.now(),
+                  status: 'down',
+                  http_status: 500,
+                  latency_ms: 0,
+                  tools_count: 0,
+                  error_message: err.message || 'Connection failed during synthetic probe',
+                },
+              ],
+              null,
+              url.origin
+            );
+
+            return new Response(request.method === 'HEAD' ? null : html, {
+              status: 200,
+              headers: {
+                ...CORS_HEADERS,
+                'Content-Type': 'text/html; charset=utf-8',
+              },
+            });
+          }
+        }
+
+        // If no URL parameter provided, redirect to demo
+        return Response.redirect(`${url.origin}/status/demo`, 302);
+      }
+
+      // 2c. Hosted Public Status Dashboard (/status/:monitorId)
       const statusPageMatch = url.pathname.match(/^\/status\/([a-zA-Z0-9_-]+)$/);
       if (statusPageMatch && (request.method === 'GET' || request.method === 'HEAD')) {
         const monitorId = statusPageMatch[1];
