@@ -20,7 +20,8 @@ Traditional uptime monitors stop at `HTTP 200 OK`. **MCP Sentinel** is a **Unive
 * **Ajv Schema Validation:** Detects malformed tool input schemas, syntax errors, and missing property declarations.
 * **Breaking Schema Drift Detection:** Computes canonical SHA-256 hashes across tool definitions. Detects removed tools, deleted parameters, mutated parameter types, and newly added required fields.
 * **Secret & Credential Scanner:** Audits tool descriptions and parameters for exposed OpenAI/Anthropic API keys, AWS credentials, and hardcoded database connection strings with automated redaction.
-* **Dynamic GitHub README Badges:** Embeddable, edge-cached SVG status and schema verification badges.
+* **Hosted Public Status Pages (`/status/:monitorId`):** Dedicated, edge-rendered public status dashboards with 60-bar uptime history, round-trip latency metrics, discovered tool catalog, schema context tax estimation, and automated dynamic README badges.
+* **Dynamic GitHub README Badges:** Embeddable, edge-cached SVG status and schema verification badges that link directly to your public status page.
 * **Multi-Channel Alerting:** Instant notifications via Slack Block Kit and Discord Webhook embeds.
 
 ---

@@ -380,7 +380,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         <div class="badge-preview">
           <div>
             <div style="font-size: 0.8rem; color: var(--muted); margin-bottom: 0.3rem;">Live Dynamic GitHub README Badge:</div>
-            <div class="badge-code" id="badgeMarkdown">[![MCP Sentinel Status](https://mcp-sentinel.pasihakamaki.workers.dev/badge/demo/status.svg)](https://mcp-sentinel.pasihakamaki.workers.dev)</div>
+            <div class="badge-code" id="badgeMarkdown">[![MCP Sentinel Status](https://mcp-sentinel.pasihakamaki.workers.dev/badge/demo/status.svg)](https://mcp-sentinel.pasihakamaki.workers.dev/status/demo)</div>
           </div>
           <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
             <button type="button" onclick="copyBadge()" style="padding: 0.5rem 1rem; font-size: 0.8rem;">Copy Markdown</button>
@@ -789,7 +789,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         }
         document.getElementById('mSuccessMsg').innerText = msg;
 
-        const badgeMd = '[![MCP Sentinel Status](' + data.statusBadgeUrl + ')](' + window.location.origin + ')';
+        const badgeMd = '[![MCP Sentinel Status](' + data.statusBadgeUrl + ')](' + window.location.origin + '/status/' + data.monitorId + ')';
         document.getElementById('mBadgeCode').innerText = badgeMd;
         document.getElementById('mBadgePreview').innerHTML = '<img src="' + data.statusBadgeUrl + '" alt="status badge">';
       } catch (err) {

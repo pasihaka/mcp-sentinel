@@ -2,6 +2,8 @@ import { executeSyntheticCheck } from '../core/synthetic-runner.js';
 import { generateStatusBadge, generateSchemaBadge } from './badge-generator.js';
 import { WebhookDispatcher, type AlertDestination } from '../alerts/webhook-dispatcher.js';
 import { LANDING_PAGE_HTML } from './landing-page.js';
+import { renderStatusPage } from './status-page.js';
+import { renderNotFoundPage } from './not-found-page.js';
 import {
   generateMagicToken,
   verifyMagicToken,
@@ -149,6 +151,93 @@ export default {
             ...CORS_HEADERS,
             'Content-Type': 'image/svg+xml; charset=utf-8',
             'Cache-Control': 'no-cache, no-store, must-revalidate',
+          },
+        });
+      }
+
+      // 2b. Hosted Public Status Dashboard (/status/:monitorId)
+      const statusPageMatch = url.pathname.match(/^\/status\/([a-zA-Z0-9_-]+)$/);
+      if (statusPageMatch && (request.method === 'GET' || request.method === 'HEAD')) {
+        const monitorId = statusPageMatch[1];
+
+        if (monitorId === 'demo' || monitorId === 'sample') {
+          const html = renderStatusPage(
+            {
+              id: monitorId,
+              name: 'Sample MCP Filesystem & Search Server',
+              endpoint_url: 'https://demo-filesystem-mcp.pasihakamaki.workers.dev/mcp',
+              status: 'operational',
+              check_interval_seconds: 60,
+              last_checked_at: Date.now() - 42000,
+              last_latency_ms: 38,
+            },
+            [],
+            null,
+            url.origin
+          );
+
+          return new Response(request.method === 'HEAD' ? null : html, {
+            status: 200,
+            headers: {
+              ...CORS_HEADERS,
+              'Content-Type': 'text/html; charset=utf-8',
+              'Cache-Control': 'public, max-age=60, s-maxage=60',
+            },
+          });
+        }
+
+        if (env.DB) {
+          try {
+            const monitor: any = await env.DB.prepare(
+              'SELECT id, name, endpoint_url, check_interval_seconds, status, last_checked_at, last_latency_ms, created_at FROM monitors WHERE id = ?'
+            ).bind(monitorId).first();
+
+            if (!monitor) {
+              const notFoundHtml = renderNotFoundPage(url.origin, monitorId);
+              return new Response(request.method === 'HEAD' ? null : notFoundHtml, {
+                status: 404,
+                headers: {
+                  ...CORS_HEADERS,
+                  'Content-Type': 'text/html; charset=utf-8',
+                },
+              });
+            }
+
+            const logsResult = await env.DB.prepare(
+              'SELECT id, timestamp, status, http_status, latency_ms, tools_count, schema_hash, error_message FROM check_logs WHERE monitor_id = ? ORDER BY timestamp DESC LIMIT 60'
+            ).bind(monitorId).all();
+
+            const snapshot: any = await env.DB.prepare(
+              'SELECT raw_tools_json, schema_hash, created_at FROM schema_snapshots WHERE monitor_id = ? ORDER BY created_at DESC LIMIT 1'
+            ).bind(monitorId).first();
+
+            const html = renderStatusPage(
+              monitor,
+              (logsResult.results || []) as any[],
+              snapshot || null,
+              url.origin
+            );
+
+            return new Response(request.method === 'HEAD' ? null : html, {
+              status: 200,
+              headers: {
+                ...CORS_HEADERS,
+                'Content-Type': 'text/html; charset=utf-8',
+                'Cache-Control': 'public, max-age=30, s-maxage=30',
+              },
+            });
+          } catch (dbErr: any) {
+            console.error('Error fetching monitor status data:', dbErr);
+          }
+        }
+
+        // Fallback to 404
+        const notFoundHtml = renderNotFoundPage(url.origin, monitorId);
+        return new Response(request.method === 'HEAD' ? null : notFoundHtml, {
+          status: 404,
+          headers: {
+            ...CORS_HEADERS,
+            'Content-Type': 'text/html; charset=utf-8',
           },
         });
       }

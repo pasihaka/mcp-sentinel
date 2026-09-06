@@ -370,7 +370,8 @@ export async function handleJsonRpcMessage(
       if (toolName === 'get_monitor_badge') {
         const monitorId = args.monitorId || 'sample';
         const badgeUrl = `${originUrl}/badge/${monitorId}/status.svg`;
-        const markdown = `[![MCP Sentinel Status](${badgeUrl})](${originUrl})`;
+        const targetUrl = `${originUrl}/status/${monitorId}`;
+        const markdown = `[![MCP Sentinel Status](${badgeUrl})](${targetUrl})`;
 
         return {
           jsonrpc: '2.0',
@@ -379,7 +380,7 @@ export async function handleJsonRpcMessage(
             content: [
               {
                 type: 'text',
-                text: `Badge URL: ${badgeUrl}\n\nMarkdown Embed Code:\n\`\`\`markdown\n${markdown}\n\`\`\``,
+                text: `Badge URL: ${badgeUrl}\nStatus Page: ${targetUrl}\n\nMarkdown Embed Code:\n\`\`\`markdown\n${markdown}\n\`\`\``,
               },
             ],
             isError: false,

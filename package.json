@@ -1,6 +1,6 @@
 {
   "name": "mcp-sentinel",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "description": "Autonomous Protocol Health, Schema-Drift & Security Sentinel for Remote Model Context Protocol Servers",
   "main": "dist/worker.js",
