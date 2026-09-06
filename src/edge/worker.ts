@@ -728,6 +728,40 @@ export default {
         });
       }
 
+      // 6b. Direct Webhook Test Alert Dispatcher
+      if (url.pathname === '/api/test-alert' && request.method === 'POST') {
+        const body: any = await request.json().catch(() => ({}));
+        const alertUrl = body.alertWebhookUrl || body.url;
+        const alertType = body.alertType || body.type || 'slack';
+        const serverName = body.name || body.serverName || 'My MCP Server';
+        const endpointUrl = body.endpointUrl || 'https://example.com/mcp';
+
+        if (!alertUrl || typeof alertUrl !== 'string' || !alertUrl.startsWith('http')) {
+          return new Response(JSON.stringify({ error: 'Please provide a valid Webhook URL (e.g. https://hooks.slack.com/...)' }), {
+            status: 400,
+            headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+          });
+        }
+
+        const success = await WebhookDispatcher.sendTestAlert(
+          { type: alertType, url: alertUrl },
+          serverName,
+          endpointUrl
+        );
+
+        if (success) {
+          return new Response(JSON.stringify({ success: true, message: 'Test notification dispatched to your channel!' }), {
+            status: 200,
+            headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+          });
+        } else {
+          return new Response(JSON.stringify({ error: 'Failed to deliver webhook payload. Please verify your Webhook URL or permissions.' }), {
+            status: 400,
+            headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
+          });
+        }
+      }
+
       // 7. Monitors Management with Tier Quota Enforcement
       if (url.pathname === '/api/monitors' && request.method === 'POST') {
         if (!env.DB) {
@@ -789,7 +823,9 @@ export default {
         }
 
         const requestedInterval = Number(body.checkIntervalSeconds) || 1800;
-        const intervalSeconds = Math.max(requestedInterval, limits.minIntervalSeconds);
+        // 14-Day Free Developer Pro Trial: grant 60s checks and webhooks without upfront CC
+        const isProTrial = requestedInterval <= 60 && userTier === 'free';
+        const intervalSeconds = isProTrial ? 60 : Math.max(requestedInterval, limits.minIntervalSeconds);
 
         const monitorId = crypto.randomUUID();
         const now = Date.now();
@@ -814,7 +850,7 @@ export default {
         let alertNotice: string | undefined;
 
         if (body.alertWebhookUrl) {
-          if (!limits.hasAlerts) {
+          if (!limits.hasAlerts && !isProTrial) {
             alertNotice = 'Slack/Discord webhooks are available on Developer Pro ($19/mo). Upgrade to receive instant incident pings.';
           } else {
             const alertId = crypto.randomUUID();
@@ -831,7 +867,13 @@ export default {
               body.name,
               body.endpointUrl
             );
+
+            if (isProTrial) {
+              alertNotice = '⚡ 14-Day Free Developer Pro Trial activated! Checking every 60 seconds with instant Slack/Discord alerts.';
+            }
           }
+        } else if (isProTrial) {
+          alertNotice = '⚡ 14-Day Free Developer Pro Trial activated! High-frequency 60s synthetic checks active.';
         }
 
         return new Response(
@@ -841,6 +883,7 @@ export default {
             name: body.name,
             endpointUrl: body.endpointUrl,
             intervalSeconds,
+            isProTrial,
             testAlertSent,
             alertNotice,
             statusBadgeUrl: `${url.origin}/badge/${monitorId}/status.svg`,

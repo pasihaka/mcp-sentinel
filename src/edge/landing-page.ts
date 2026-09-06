@@ -620,6 +620,13 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           <div style="font-size: 0.72rem; color: var(--muted); margin-top: 0.2rem;">Used solely for this handshake probe; never stored or logged in public audits.</div>
         </div>
       </div>
+      <div style="margin-top: 0.6rem; padding: 0.5rem 0.75rem; background: rgba(59, 130, 246, 0.08); border: 1px dashed rgba(59, 130, 246, 0.3); border-radius: 6px; font-size: 0.76rem; color: #93c5fd; text-align: left; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+        <span>💡 <strong>Testing a local MCP server?</strong></span>
+        <span style="color: #cbd5e1;">Tunnel to HTTPS in seconds:</span>
+        <code style="background: #0f172a; border: 1px solid rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; color: #38bdf8; font-family: monospace;">npx untun@latest tunnel http://localhost:3000</code>
+        <span style="color: var(--muted);">or</span>
+        <code style="background: #0f172a; border: 1px solid rgba(255,255,255,0.1); padding: 0.15rem 0.4rem; border-radius: 4px; color: #38bdf8; font-family: monospace;">ngrok http 3000</code>
+      </div>
       <div style="font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem;">Tests JSON-RPC 2.0 handshake, schema validity (Ajv), tool drift, and secret leaks in &lt;500ms.</div>
       <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
         <span style="font-size: 0.8rem; color: var(--muted);">Live Benchmarks:</span>
@@ -716,6 +723,52 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
                 <button type="button" id="copyJsonBtn" onclick="copyRawToolsJson()" style="display: none; background: #1e293b; border: 1px solid var(--border); color: #cbd5e1; font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 4px; cursor: pointer;">Copy Tools JSON</button>
               </div>
               <pre id="rawJsonBlock" style="display: none; background: #030712; border: 1px solid #1e293b; border-radius: 6px; padding: 0.85rem; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #94a3b8; max-height: 250px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; margin: 0;"></pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Schema Drift Simulation Banner -->
+        <div id="driftSimContainer" style="margin-top: 1.25rem; background: #0b1322; border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px; padding: 1rem 1.25rem; text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <div style="font-size: 0.88rem; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 0.45rem;">
+                <span>⚠️ Wondering why agents break in production?</span>
+                <span style="font-size: 0.7rem; padding: 0.15rem 0.45rem; background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-radius: 9999px; font-weight: 600;">INTERACTIVE DEMO</span>
+              </div>
+              <div style="font-size: 0.78rem; color: #94a3b8; margin-top: 0.2rem;">Simulate an unannounced backend schema change to see how Sentinel catches it before Claude/Cursor fail.</div>
+            </div>
+            <button type="button" id="simulateDriftBtn" onclick="toggleSimulateDrift()" style="padding: 0.45rem 0.95rem; font-size: 0.8rem; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s;">⚡ Simulate Breaking Schema Drift</button>
+          </div>
+
+          <div id="driftSimDetails" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.08);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.85rem;">
+              <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); border-radius: 6px; padding: 0.85rem;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: #f87171; text-transform: uppercase; margin-bottom: 0.35rem;">1. Silent Schema Mutation</div>
+                <div style="font-size: 0.8rem; color: #f1f5f9; font-family: monospace; background: #050b14; padding: 0.5rem; border-radius: 4px; line-height: 1.4;">
+                  <span style="color: #ef4444;">- param "query": string (required)</span><br>
+                  <span style="color: #10b981;">+ param "search_term": string (required)</span>
+                </div>
+                <div style="font-size: 0.74rem; color: #94a3b8; margin-top: 0.35rem;">A developer pushed a commit renaming a parameter without updating prompt instructions.</div>
+              </div>
+              <div style="background: rgba(245, 158, 11, 0.08); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 6px; padding: 0.85rem;">
+                <div style="font-size: 0.72rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; margin-bottom: 0.35rem;">2. Production Agent Crash</div>
+                <div style="font-size: 0.8rem; color: #fde68a; line-height: 1.45;">
+                  💥 <strong>Agent Failure:</strong> Claude Desktop or Cursor calls tool with old param <code style="color: #fff;">{"query":"..."}</code>, server throws <code style="color: #ef4444;">-32602 Invalid Params</code>, and the AI hallucination loop begins.
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top: 0.85rem; background: #030712; border: 1px solid #1e293b; border-radius: 6px; padding: 0.85rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="font-size: 0.75rem; font-weight: 700; color: #60a5fa; text-transform: uppercase;">3. Real-Time Slack / Discord Alert Dispatched</div>
+                <span style="font-size: 0.72rem; color: #10b981; font-weight: 600;">Dispatched in &lt;60s · Autonomous Interception</span>
+              </div>
+              <div style="background: #090d16; border-left: 3px solid #ef4444; padding: 0.6rem 0.8rem; border-radius: 4px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 0.8rem; color: #e2e8f0; line-height: 1.4;">
+                <div style="font-weight: 700; color: #ef4444; margin-bottom: 0.2rem;">🚨 MCP Sentinel Alert: Breaking Schema Drift Detected</div>
+                <div><strong>Server:</strong> Production MCP (<code style="color: #93c5fd;">/mcp</code>)</div>
+                <div><strong>Drift:</strong> Tool <code style="color: #f59e0b;">search_knowledge_base</code> removed required param <code style="color: #f87171;">query</code>.</div>
+                <div style="margin-top: 0.3rem; font-size: 0.74rem; color: #94a3b8;">Prevented 42 agent query failures across active customer sessions.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -948,7 +1001,10 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             <li>Slack & Discord Incoming Webhooks</li>
             <li>30-day historical latency logs</li>
           </ul>
-          <button style="width: 100%;" onclick="window.location.href='https://buy.stripe.com/aFa00j8tE3mE7OH3Ss5EY00'">Upgrade to Pro ($19/mo)</button>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <button type="button" style="width: 100%;" onclick="openMonitorModalWithPro()">⚡ Start 14-Day Free Pro Trial (No CC)</button>
+            <a href="https://buy.stripe.com/aFa00j8tE3mE7OH3Ss5EY00" style="text-align: center; color: #94a3b8; font-size: 0.78rem; text-decoration: underline;">Or subscribe directly ($19/mo)</a>
+          </div>
         </div>
 
         <div class="pricing-card">
@@ -978,42 +1034,32 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           <span>Glama Verified</span>
         </a>
         <a href="https://github.com/pasihaka/mcp-sentinel" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: #111827; border: 1px solid #1f2937; border-radius: 9999px; color: #cbd5e1; text-decoration: none; font-size: 0.8rem; font-weight: 500;">
-          <span>⭐</span>
-          <span>GitHub Source</span>
-        </a>
-        <a href="https://github.com/pasihaka/mcp-sentinel/issues" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: #111827; border: 1px solid #1f2937; border-radius: 9999px; color: #a78bfa; text-decoration: none; font-size: 0.8rem; font-weight: 500;">
-          <span>💬</span>
-          <span>Developer Support</span>
-        </a>
-        <a href="mailto:mcpsentinel@gmail.com" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: #111827; border: 1px solid #1f2937; border-radius: 9999px; color: #f472b6; text-decoration: none; font-size: 0.8rem; font-weight: 500;">
-          <span>✉️</span>
-          <span>mcpsentinel@gmail.com</span>
+          <span>📂</span>
+          <span>GitHub (Open Core)</span>
         </a>
       </div>
-      <div>&copy; 2026 MCP Sentinel. Autonomous Synthetic Protocol Reliability for Remote AI Agents.</div>
+      <div>
+        <span>Built by engineers running remote MCP agents in production.</span>
+        <span style="margin: 0 0.5rem;">·</span>
+        <a href="https://modelcontextprotocol.io" target="_blank" rel="noopener" style="color: var(--muted);">Model Context Protocol</a>
+      </div>
     </footer>
   </div>
 
-  <!-- Setup Alert Monitor Modal -->
-  <div id="monitorModal" class="modal-overlay" style="display: none;" onclick="if(event.target===this)closeMonitorModal()">
+  <!-- Setup Monitor Modal -->
+  <div class="modal-overlay" id="monitorModal" style="display: none;" onclick="if(event.target===this)closeMonitorModal()">
     <div class="modal-card">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 0.5rem;">
-          <span style="font-size: 1.3rem;">🛡️</span>
-          <h3 style="margin: 0; font-size: 1.25rem;">Set Up 24/7 MCP Monitoring</h3>
-        </div>
-        <button type="button" class="modal-close" onclick="closeMonitorModal()">&times;</button>
-      </div>
-
       <div id="modalFormView">
-        <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 1.2rem; line-height: 1.4;">
-          Autonomous synthetic testing over Streamable HTTP and SSE. Get alerted on Slack or Discord the instant your server drops or tool schemas drift.
-        </p>
-
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+          <h3 style="font-size: 1.3rem; font-weight: 700; margin: 0;">⚡ Set Up 24/7 MCP Monitoring</h3>
+          <button type="button" class="modal-close" onclick="closeMonitorModal()">&times;</button>
+        </div>
+        <p style="color: var(--muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Autonomous edge synthetic checks with instant Slack, Discord, and schema drift alerts.</p>
+        
         <form id="monitorForm" onsubmit="submitMonitor(event)">
           <div class="form-group">
-            <label>Server Name</label>
-            <input type="text" id="mName" placeholder="e.g. Production Knowledge MCP" required style="width: 100%;">
+            <label>Monitor Name</label>
+            <input type="text" id="mName" placeholder="e.g. My Production MCP" required style="width: 100%;">
           </div>
 
           <div class="form-group">
@@ -1032,14 +1078,15 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
           <div class="form-group">
             <label>Check Frequency</label>
             <select id="mInterval" style="width: 100%; background: #0b1120; border: 1px solid var(--border); color: #fff; padding: 0.75rem; border-radius: 8px; font-size: 0.9rem;">
-              <option value="1800">Every 30 minutes (Free)</option>
-              <option value="60">Every 60 seconds (Pro $19/mo)</option>
+              <option value="60" selected>⚡ Every 60 seconds (14-Day Free Pro Trial — No CC Required)</option>
+              <option value="1800">Every 30 minutes (Free Community forever)</option>
             </select>
+            <div style="font-size: 0.75rem; color: #10b981; margin-top: 0.35rem;">✨ 14-day free trial of 60s checks &amp; instant Slack/Discord alerts automatically included with zero commitment.</div>
           </div>
 
           <div class="form-group">
             <label>Alert Destination (Slack or Discord Webhook)</label>
-            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.4rem;">
               <select id="mAlertType" style="background: #0b1120; border: 1px solid var(--border); color: #fff; padding: 0.6rem; border-radius: 8px; font-size: 0.85rem;">
                 <option value="slack">Slack</option>
                 <option value="discord">Discord</option>
@@ -1047,7 +1094,11 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
               </select>
               <input type="url" id="mAlertUrl" placeholder="https://hooks.slack.com/... or discord.com/api/webhooks/..." style="flex: 1;">
             </div>
-            <div style="font-size: 0.75rem; color: var(--muted);">We'll dispatch an instant test notification upon saving to verify connectivity.</div>
+            <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.4rem; flex-wrap: wrap;">
+              <button type="button" id="mTestAlertBtn" onclick="sendModalTestPing()" style="padding: 0.35rem 0.75rem; font-size: 0.78rem; background: #1e293b; color: #93c5fd; border: 1px solid #3b82f6; border-radius: 6px; cursor: pointer; font-weight: 500;">🔔 Send Test Ping to Channel</button>
+              <span id="mTestAlertStatus" style="font-size: 0.78rem; display: none;"></span>
+            </div>
+            <div style="font-size: 0.74rem; color: var(--muted); margin-top: 0.3rem;">Test webhook delivery right now with zero commitment.</div>
           </div>
 
           <div class="form-group">
@@ -1183,6 +1234,17 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         }
 
         updateDiagnostics(data);
+        window._lastAuditData = data;
+        window._isSimulatingDrift = false;
+        const simBtn = document.getElementById('simulateDriftBtn');
+        if (simBtn) {
+          simBtn.innerText = '⚡ Simulate Breaking Schema Drift';
+          simBtn.style.background = 'rgba(239, 68, 68, 0.15)';
+          simBtn.style.color = '#fca5a5';
+          simBtn.style.borderColor = '#ef4444';
+        }
+        const simDetails = document.getElementById('driftSimDetails');
+        if (simDetails) simDetails.style.display = 'none';
       } catch (err) {
         // Fallback demo values for offline viewing
         resultsArea.style.display = 'block';
@@ -1196,7 +1258,7 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
         document.getElementById('tokensCostVal').innerHTML = '<span style="color: #10b981; font-weight: 600;">⚡ Lean (+$0.004/turn · 5.2 KB memory)</span>';
         document.getElementById('securityVal').innerText = 'Clean';
 
-        updateDiagnostics({
+        const fallbackData = {
           status: 'operational',
           protocolPhase: 'complete',
           toolsCount: 2,
@@ -1207,10 +1269,128 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
             { name: 'query_db', description: 'Execute a read-only SQL query', inputSchema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } }
           ],
           remediationHint: 'All tools passed Ajv JSON schema validation with 0 secret leaks.'
-        });
+        };
+        updateDiagnostics(fallbackData);
+        window._lastAuditData = fallbackData;
+        window._isSimulatingDrift = false;
       } finally {
         btn.disabled = false;
         btn.innerText = 'Run Instant Audit';
+      }
+    }
+
+    function toggleSimulateDrift() {
+      const details = document.getElementById('driftSimDetails');
+      const btn = document.getElementById('simulateDriftBtn');
+      const verdict = document.getElementById('verdictVal');
+      const alertBox = document.getElementById('auditAlertNotice');
+      
+      if (!window._isSimulatingDrift) {
+        window._isSimulatingDrift = true;
+        details.style.display = 'block';
+        btn.innerText = '↩ Restore Original Audit';
+        btn.style.background = '#1e293b';
+        btn.style.color = '#cbd5e1';
+        btn.style.borderColor = 'var(--border)';
+
+        verdict.innerText = 'SCHEMA DRIFT';
+        verdict.style.color = '#ef4444';
+
+        alertBox.style.display = 'block';
+        alertBox.style.background = 'rgba(239, 68, 68, 0.15)';
+        alertBox.style.border = '1px solid #ef4444';
+        alertBox.style.color = '#fca5a5';
+        alertBox.innerHTML = '🚨 <strong>Breaking Schema Drift Simulated:</strong> Required parameter <code>query</code> renamed to <code>search_term</code>. Any Claude/Cursor agent relying on this tool will immediately fail with <code>-32602 Invalid Params</code>.';
+
+        // Expand diagnostic frame to show drift error
+        const diagContent = document.getElementById('diagnosticContent');
+        const diagArrow = document.getElementById('diagnosticToggleArrow');
+        const diagBadge = document.getElementById('diagnosticBadge');
+        const diagIcon = document.getElementById('diagnosticStatusIcon');
+        const remBox = document.getElementById('diagRemediationBox');
+        const remTitle = document.getElementById('diagRemediationTitle');
+        const remText = document.getElementById('diagRemediationText');
+        const stepVal = document.getElementById('stepValidation');
+
+        if (diagContent) diagContent.style.display = 'block';
+        if (diagArrow) diagArrow.innerText = '▲';
+        if (diagBadge) {
+          diagBadge.innerText = 'Breaking Drift';
+          diagBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+          diagBadge.style.color = '#ef4444';
+        }
+        if (diagIcon) diagIcon.innerText = '⚠️';
+        if (stepVal) stepVal.className = 'diag-step step-fail';
+        if (remBox && remText) {
+          remBox.style.display = 'block';
+          remTitle.innerText = '⚠️ Breaking Schema Drift: Breaking Parameter Rename';
+          remText.innerHTML = '<strong>Root Cause:</strong> Tool <code>search_knowledge_base</code> dropped required property <code>query</code>.<br><strong>Remediation:</strong> Maintain <code>query</code> as an optional alias for at least 30 days or bump the major tool version so agents update their function signatures.';
+        }
+      } else {
+        window._isSimulatingDrift = false;
+        details.style.display = 'none';
+        btn.innerText = '⚡ Simulate Breaking Schema Drift';
+        btn.style.background = 'rgba(239, 68, 68, 0.15)';
+        btn.style.color = '#fca5a5';
+        btn.style.borderColor = '#ef4444';
+
+        if (window._lastAuditData) {
+          const d = window._lastAuditData;
+          verdict.innerText = d.status ? d.status.toUpperCase() : 'OPERATIONAL';
+          verdict.style.color = d.status === 'down' ? '#ef4444' : (d.status === 'degraded' ? '#f59e0b' : '#10b981');
+          updateDiagnostics(d);
+          if (d.status === 'operational') {
+            alertBox.style.display = 'none';
+          }
+        }
+      }
+    }
+
+    async function sendModalTestPing() {
+      const alertUrl = document.getElementById('mAlertUrl').value.trim();
+      const alertType = document.getElementById('mAlertType').value;
+      const serverName = document.getElementById('mName').value.trim() || 'My Production MCP';
+      const endpointUrl = document.getElementById('mUrl').value.trim() || 'https://example.com/mcp';
+      const statusEl = document.getElementById('mTestAlertStatus');
+      const btn = document.getElementById('mTestAlertBtn');
+
+      if (!alertUrl) {
+        alert('Please enter your Slack or Discord Webhook URL first.');
+        document.getElementById('mAlertUrl').focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Sending Ping...';
+      statusEl.style.display = 'inline';
+      statusEl.style.color = '#94a3b8';
+      statusEl.innerText = 'Dispatching test payload...';
+
+      try {
+        const res = await fetch('/api/test-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            alertType: alertType,
+            alertWebhookUrl: alertUrl,
+            name: serverName,
+            endpointUrl: endpointUrl,
+          }),
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          statusEl.style.color = '#10b981';
+          statusEl.innerText = '✅ Test ping sent! Check your channel.';
+        } else {
+          statusEl.style.color = '#ef4444';
+          statusEl.innerText = '❌ ' + (data.error || 'Failed to deliver webhook.');
+        }
+      } catch (err) {
+        statusEl.style.color = '#ef4444';
+        statusEl.innerText = '❌ Error: ' + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '🔔 Send Test Ping to Channel';
       }
     }
 
@@ -1229,6 +1409,8 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       document.getElementById('monitorModal').style.display = 'flex';
       document.getElementById('modalFormView').style.display = 'block';
       document.getElementById('modalSuccessView').style.display = 'none';
+      const statusEl = document.getElementById('mTestAlertStatus');
+      if (statusEl) statusEl.style.display = 'none';
 
       const url = prefillUrl || document.getElementById('endpointInput').value || '';
       if (url) {
@@ -1491,6 +1673,9 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
 
         let intervalText = data.intervalSeconds >= 60 ? (data.intervalSeconds/60) + ' min' : data.intervalSeconds + 's';
         let msg = 'Synthetic check scheduled every ' + intervalText + '.';
+        if (data.isProTrial) {
+          msg = '⚡ 14-Day Free Developer Pro Trial activated! High-frequency 60s checks active.';
+        }
         if (data.testAlertSent) {
           msg += ' A test notification was successfully dispatched to your webhook!';
         } else if (data.alertNotice) {

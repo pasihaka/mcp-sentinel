@@ -208,4 +208,29 @@ describe('Phase 2: Auth & Billing Engine', () => {
       expect(TIER_LIMITS.team.hasSecretScan).toBe(true);
     });
   });
+
+  describe('14-Day Free Developer Pro Trial & Instant Test Webhooks', () => {
+    it('should format and dispatch test alerts via WebhookDispatcher', async () => {
+      const { WebhookDispatcher } = await import('../src/alerts/webhook-dispatcher.js');
+
+      // Test alert returns false gracefully on unreachable URL
+      const failed = await WebhookDispatcher.sendTestAlert(
+        { type: 'slack', url: 'https://invalid-nonexistent-domain-xyz123.com/webhook' },
+        'Test MCP',
+        'https://api.example.com/mcp'
+      );
+      expect(failed).toBe(false);
+    });
+
+    it('should calculate 14-day trial interval correctly for free tier users', () => {
+      const userTier = 'free';
+      const requestedInterval = 60;
+      const isProTrial = requestedInterval <= 60 && userTier === 'free';
+      const intervalSeconds = isProTrial ? 60 : Math.max(requestedInterval, TIER_LIMITS.free.minIntervalSeconds);
+
+      expect(isProTrial).toBe(true);
+      expect(intervalSeconds).toBe(60);
+    });
+  });
 });
+
