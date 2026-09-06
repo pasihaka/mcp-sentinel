@@ -1778,6 +1778,14 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
 
     window.addEventListener('DOMContentLoaded', function() {
       var params = new URLSearchParams(window.location.search);
+      var urlParam = params.get('url');
+      if (urlParam) {
+        var input = document.getElementById('endpointInput');
+        if (input) {
+          input.value = urlParam;
+          runAudit();
+        }
+      }
       var addUrl = params.get('add');
       if (addUrl) {
         openMonitorModal(addUrl);
