@@ -268,4 +268,18 @@ describe('Worker Status Page HTTP Routes', () => {
     expect(res.status).toBe(302);
     expect(res.headers.get('Location')).toContain('/status/mon-existing-789');
   });
+
+  it('handles loop protection for self-auditing at GET /status?url=.../mcp', async () => {
+    const req = new Request('https://mcp-sentinel.pasihakamaki.workers.dev/status?url=https://mcp-sentinel.pasihakamaki.workers.dev/mcp');
+    const res = await worker.fetch(req, env, ctx);
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get('Content-Type')).toContain('text/html');
+    const text = await res.text();
+    expect(text).toContain('MCP Sentinel (Hosted Remote Server)');
+    expect(text).toContain('All Systems Operational');
+    expect(text).toContain('audit_mcp_server');
+    expect(text).toContain('verify_mcp_protocol');
+    expect(text).toContain('get_monitor_badge');
+  });
 });

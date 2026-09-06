@@ -19,7 +19,7 @@ export interface JsonRpcResponse {
   };
 }
 
-const MCP_SERVER_INFO = {
+export const MCP_SERVER_INFO = {
   name: 'mcp-sentinel',
   title: 'MCP Sentinel',
   version: '1.0.0',
@@ -29,11 +29,11 @@ const MCP_SERVER_INFO = {
   icon: 'https://mcp-sentinel.pasihakamaki.workers.dev/icon.svg',
 };
 
-const MCP_CAPABILITIES = {
+export const MCP_CAPABILITIES = {
   tools: {},
 };
 
-const MCP_TOOLS = [
+export const MCP_TOOLS = [
   {
     name: 'audit_mcp_server',
     description:
