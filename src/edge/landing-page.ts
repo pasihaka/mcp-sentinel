@@ -483,11 +483,23 @@ export const LANDING_PAGE_HTML = `<!DOCTYPE html>
       </div>
     </section>
 
-    <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-      <div>
-        <a href="https://smithery.ai/servers/pasihakamaki/mcp-sentinel" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #9ca3af; text-decoration: none;">
-          <img src="https://smithery.ai/badge/pasihakamaki/mcp-sentinel" alt="smithery badge" style="vertical-align: middle; height: 20px;">
-          <span>Official Smithery Registry Listing</span>
+    <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); text-align: center; color: var(--muted); font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 1.25rem;">
+      <div style="display: flex; gap: 0.75rem; align-items: center; justify-content: center; flex-wrap: wrap;">
+        <a href="https://smithery.ai/servers/pasihakamaki/mcp-sentinel" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: #111827; border: 1px solid #1f2937; border-radius: 9999px; color: #60a5fa; text-decoration: none; font-size: 0.8rem; font-weight: 500;">
+          <span>⚡</span>
+          <span>Smithery Registry (100/100)</span>
+        </a>
+        <a href="https://glama.ai/mcp/servers/pasihaka/mcp-sentinel" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: #111827; border: 1px solid #1f2937; border-radius: 9999px; color: #34d399; text-decoration: none; font-size: 0.8rem; font-weight: 500;">
+          <span>🛡️</span>
+          <span>Glama Verified</span>
+        </a>
+        <a href="https://github.com/pasihaka/mcp-sentinel" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: #111827; border: 1px solid #1f2937; border-radius: 9999px; color: #cbd5e1; text-decoration: none; font-size: 0.8rem; font-weight: 500;">
+          <span>⭐</span>
+          <span>GitHub Source</span>
+        </a>
+        <a href="https://github.com/pasihaka/mcp-sentinel/issues" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.8rem; background: #111827; border: 1px solid #1f2937; border-radius: 9999px; color: #a78bfa; text-decoration: none; font-size: 0.8rem; font-weight: 500;">
+          <span>💬</span>
+          <span>Developer Support</span>
         </a>
       </div>
       <div>&copy; 2026 MCP Sentinel. Autonomous Synthetic Protocol Reliability for Remote AI Agents.</div>

@@ -3,7 +3,7 @@
 **Autonomous Protocol Health, Schema-Drift & Security Sentinel for Remote Model Context Protocol (MCP) Servers.**
 
 [![MCP Status](https://img.shields.io/badge/mcp-operational-4c1)](https://github.com/pasihaka/mcp-sentinel)
-[![smithery badge](https://smithery.ai/badge/pasihakamaki/mcp-sentinel)](https://smithery.ai/servers/pasihakamaki/mcp-sentinel)
+[![Smithery](https://img.shields.io/badge/Smithery-100%2F100-blue)](https://smithery.ai/servers/pasihakamaki/mcp-sentinel)
 [![Glama](https://glama.ai/mcp/servers/pasihaka/mcp-sentinel/badge)](https://glama.ai/mcp/servers/pasihaka/mcp-sentinel)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
@@ -92,6 +92,6 @@ node dist/scripts/github-audit.js <REMOTE_MCP_SERVER_URL>
 ---
 
 ## 📜 Support & Policies
-* **Customer Support:** support@mcpsentinel.dev
+* **Customer Support & Issues:** [GitHub Issues](https://github.com/pasihaka/mcp-sentinel/issues) or [support@handlekit.com](mailto:support@handlekit.com)
 * **Refund Policy:** 14-day full refund guarantee on all subscription tiers.
 * **Cancellation:** Self-serve cancellation at any time via the Stripe Customer Billing Portal.
