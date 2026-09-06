@@ -92,6 +92,6 @@ node dist/scripts/github-audit.js <REMOTE_MCP_SERVER_URL>
 ---
 
 ## 📜 Support & Policies
-* **Customer Support & Issues:** [GitHub Issues](https://github.com/pasihaka/mcp-sentinel/issues) or [support@handlekit.com](mailto:support@handlekit.com)
+* **Customer Support & Issues:** [GitHub Issues](https://github.com/pasihaka/mcp-sentinel/issues) or [pasihakamaki@gmail.com](mailto:pasihakamaki@gmail.com)
 * **Refund Policy:** 14-day full refund guarantee on all subscription tiers.
 * **Cancellation:** Self-serve cancellation at any time via the Stripe Customer Billing Portal.

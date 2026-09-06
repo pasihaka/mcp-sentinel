@@ -2,7 +2,7 @@
 # https://smithery.ai/docs
 name: "mcp-sentinel"
 description: "Universal autonomous synthetic health checks, JSON-RPC 2.0 handshake validation across all specs (2026-07-28, 2025-11-25, 2025-06-18, 2024-11-05), breaking schema drift detection, and credential leak scanning for remote Model Context Protocol (MCP) servers."
-homepage: "https://handlekit.com"
+homepage: "https://mcp-sentinel.pasihakamaki.workers.dev"
 icon: "https://mcp-sentinel.pasihakamaki.workers.dev/icon.svg"
 
 startCommand:
